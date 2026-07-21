@@ -16,31 +16,10 @@ const Login = () => {
     setLoginData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const validateLoginData = (data) => {
-    const { email, password } = data;
-
-    let errorMessage = {};
-
-    if (email.length < 8) {
-      errorMessage.emailError = "Email too Short";
-    }
-    if (password.length < 6) {
-      errorMessage.passwordError = "Password too Short";
-    }
-
-    return Object.keys(errorMessage).length > 0 ? false : errorMessage;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here, e.g., send loginData to the server
     //Validate loginData
-
-    const validateResult = validateLoginData(loginData);
-    if (!validateResult) {
-      setValidateError(validateResult);
-      return;
-    }
 
     console.log("Login data submitted:", loginData);
 
@@ -70,13 +49,6 @@ const Login = () => {
                 onChange={handleChange}
                 className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-(--accent)"
               />
-              {
-                validateError?.emailError && (
-                  <span className="text-red-500 text-sm">
-                    {validateError.emailError}
-                  </span>
-                )
-              }
             </div>
             <div className="flex flex-col gap-2 mt-4">
               <label htmlFor="password">Password</label>
@@ -88,13 +60,6 @@ const Login = () => {
                 onChange={handleChange}
                 className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-(--accent)"
               />
-              {
-                validateError?.passwordError && (
-                  <span className="text-red-500 text-sm">
-                    {validateError.passwordError}
-                  </span>
-                )
-              }
             </div>
             <button
               type="submit"
