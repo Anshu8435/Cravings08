@@ -133,7 +133,7 @@ export const sendOTPEmail = async (email, newOTP) => {
 
     await sendEmail(email, subject, message);
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     throw error;
   }
 };
