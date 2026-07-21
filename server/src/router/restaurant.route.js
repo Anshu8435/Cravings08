@@ -12,10 +12,8 @@ const router = express.Router();
 router.post(
   "/update-profile",
   RestaurantAuthProtect,
-  upload.fields([
-    { name: "coverImage", maxCount: 1 },
-    { name: "restaurantImage", maxCount: 10 },
-  ]),
+  upload.single("coverImage"),
+  upload.array("restaurantImage", 10),
   RestaurantUpdateProfile,
 );
 

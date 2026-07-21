@@ -38,6 +38,9 @@ const CustomerSetting = () => {
 
       payload.append("displayPic", profilePic);
 
+       if (profilePic) {
+      payload.append("displayPic", profilePic);
+    }
       const response = await api.put(`/common/edit-profile`, payload);
 
       setUser(response.data.data);
