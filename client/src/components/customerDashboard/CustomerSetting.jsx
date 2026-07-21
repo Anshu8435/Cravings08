@@ -31,7 +31,7 @@ const CustomerSetting = () => {
     try {
       setIsLoading(true);
 
-      const payload = new FormData();
+      const payload =  new FormData();
       payload.append("fullName", formData.fullName);
       payload.append("email", formData.email.toLowerCase());
       payload.append("phone", formData.phone);
