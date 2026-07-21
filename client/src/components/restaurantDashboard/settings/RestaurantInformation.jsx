@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MdEdit } from "react-icons/md";
 import { useAuth } from "../../../context/AuthContext";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/ApiConfig"
 import toast from "react-hot-toast";
 import { MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import PasswordChangeModal from "../../commonModals/PasswordChangeModal";
@@ -43,17 +43,19 @@ const RestaurantInformation = () => {
 
       payload.append("displayPic", profilePic);
 
-      const response = await api.put(`/user/edit-profile`, payload);
+      const response = await api.put(`/edit-profile`, payload);
 
       setUser(response.data.data);
       sessionStorage.setItem("cravingUser", JSON.stringify(response.data.data));
 
-      setEditingProfile(false);
+      setEditingProfile(true);
       toast.success("Profile updated successfully!");
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
+      
     }
   };
 

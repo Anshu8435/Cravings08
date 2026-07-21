@@ -36,7 +36,7 @@ const CustomerSetting = () => {
       payload.append("email", formData.email.toLowerCase());
       payload.append("phone", formData.phone);
 
-      payload.append("displayPic", profilePic);
+      // payload.append("displayPic", profilePic);
 
        if (profilePic) {
       payload.append("displayPic", profilePic);
@@ -49,6 +49,7 @@ const CustomerSetting = () => {
       setEditingProfile(false);
       toast.success("Profile updated successfully!");
     } catch (err) {
+      console.log(err)
       toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
