@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdOutlineLockReset } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/ApiConfig";
 import toast from "react-hot-toast";
@@ -38,7 +38,7 @@ const CustomerSetting = () => {
 
       payload.append("displayPic", profilePic);
 
-      const response = await api.put(`/user/edit-profile`, payload);
+      const response = await api.put(`/common/edit-profile`, payload);
 
       setUser(response.data.data);
       sessionStorage.setItem("cravingUser", JSON.stringify(response.data.data));

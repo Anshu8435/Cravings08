@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { genToken } from "../utils/auth.service.js";
 import OTP from "../models/otp.model.js";
+import { sendOTPEmail } from "../utils/email.service.js";
 
 export const RegisterUser = async (req, res, next) => {
   try {
@@ -52,7 +53,7 @@ export const RegisterUser = async (req, res, next) => {
     res.status(201).json({ message: "User Created Successfully" });
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };
 
@@ -88,7 +89,7 @@ export const LoginUser = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };
 
@@ -99,7 +100,7 @@ export const LogoutUser = async (req, res, next) => {
     res.status(200).json({ message: "Logout Sucessfully" });
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };
 
@@ -135,20 +136,22 @@ export const SendOtp = async (req, res, next) => {
     res.status(200).json({ message: `OTP sent on '${email}'` });
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };
+
 export const VerifyOtp = async (req, res, next) => {
   try {
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };
+
 export const ResetPassword = async (req, res, next) => {
   try {
   } catch (error) {
     console.log(error.message);
-    next();
+    next(error);
   }
 };

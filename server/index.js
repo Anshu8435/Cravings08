@@ -21,6 +21,7 @@ app.use(morgan("dev"));
 app.use("/auth", AuthRouter);
 app.use("/public", PublicRouter);
 app.use("/common", CommonRouter);
+app.use("/restaurant", RestaurantRouter);
 
 //Default API
 app.get("/", (req, res) => {

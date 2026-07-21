@@ -52,8 +52,7 @@ const Login = () => {
     console.log("Login submitted:", formData);
 
     try {
-      const res = await api.post("/auth/login", {
-        email: formData.email.toLowerCase(),
+      const res = await api.post("/auth/login", { email: formData.email.toLowerCase(),
         password: formData.password,
       });
       toast.success(res.data.message);
