@@ -65,8 +65,8 @@ const Navbar = () => {
               />
               <div className="flex flex-col items-start">
                 <span className="text-base">{user?.fullName}</span>
-                <span className="text-xs text-(--color-primary-content)/80">
-                  Customer
+                <span className="text-xs text-(--color-primary-content)/80 uppercase">
+                  {role}
                 </span>
               </div>
             </button>
