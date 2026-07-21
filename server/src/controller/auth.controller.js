@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { genToken } from "../utils/auth.service.js";
+import OTP from "../models/otp.model.js";
 
 export const RegisterUser = async (req, res, next) => {
   try {
@@ -96,6 +97,56 @@ export const LogoutUser = async (req, res, next) => {
     res.clearCookie("Oreo", { maxAge: 0 });
 
     res.status(200).json({ message: "Logout Sucessfully" });
+  } catch (error) {
+    console.log(error.message);
+    next();
+  }
+};
+
+export const SendOtp = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      const error = new Error("Email is required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      const error = new Error("Email not registered");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // Generate and send OTP here
+    const newOTP = (Math.floor(Math.random() * 1000000) + 100000)
+      .toString()
+      .slice(0, 6);
+
+    //Send OTP via Email
+    const hashedOTP = await bcrypt.hash(newOTP, 10);
+    const saveOTP = await OTP.create({
+      email,
+      otp: hashedOTP,
+    });
+    await sendOTPEmail(email, newOTP);
+
+    res.status(200).json({ message: `OTP sent on '${email}'` });
+  } catch (error) {
+    console.log(error.message);
+    next();
+  }
+};
+export const VerifyOtp = async (req, res, next) => {
+  try {
+  } catch (error) {
+    console.log(error.message);
+    next();
+  }
+};
+export const ResetPassword = async (req, res, next) => {
+  try {
   } catch (error) {
     console.log(error.message);
     next();

@@ -16,7 +16,7 @@ const CustomerSchema = mongoose.Schema(
           state: { type: String, required: true },
           pinCode: { type: String, required: true },
           country: { type: String, required: true },
-          type: {
+          addressType: {
             type: String,
             enum: ["home", "work", "other"],
             required: true,
