@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+
 export const genToken = async (user, res) => {
   try {
     const payload = { id: user._id };
