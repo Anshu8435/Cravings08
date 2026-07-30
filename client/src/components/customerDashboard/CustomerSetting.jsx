@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { MdEdit, MdOutlineLockReset } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/ApiConfig";
 import toast from "react-hot-toast";
-import { MdOutlineAddAPhoto } from "react-icons/md";
+import { MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import PasswordChangeModal from "../commonModals/PasswordChangeModal";
 
 const CustomerSetting = () => {
@@ -31,16 +31,13 @@ const CustomerSetting = () => {
     try {
       setIsLoading(true);
 
-      const payload =  new FormData();
+      const payload = new FormData();
       payload.append("fullName", formData.fullName);
       payload.append("email", formData.email.toLowerCase());
       payload.append("phone", formData.phone);
 
-      // payload.append("displayPic", profilePic);
-
-       if (profilePic) {
       payload.append("displayPic", profilePic);
-    }
+
       const response = await api.put(`/common/edit-profile`, payload);
 
       setUser(response.data.data);
@@ -49,7 +46,6 @@ const CustomerSetting = () => {
       setEditingProfile(false);
       toast.success("Profile updated successfully!");
     } catch (err) {
-      console.log(err)
       toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
       setIsLoading(false);

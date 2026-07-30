@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 * {
-
   box-sizing: border-box;
 }
 
@@ -70,6 +69,8 @@ input[type="password"]::-ms-reveal {
 
 textarea:disabled,
 select:disabled,
-input:disabled{
-  cursor:not-allowed;
+input:disabled {
+  cursor: not-allowed;
 }
+
+

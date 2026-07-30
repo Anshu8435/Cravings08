@@ -50,10 +50,8 @@ const ForgotPasswordModal = ({ open, onClose }) => {
         toast.success(res.data.message);
         setIsOtpVerified(true);
         handleCloseModal();
-
       }
-    } catch (error) { 
-      console.log(error)
+    } catch (error) {
       toast.error(
         error.response?.data?.message ||
           "Unknown error occurred during registration. Please try again.",
