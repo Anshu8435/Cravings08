@@ -1,0 +1,18 @@
+{
+  "name": "cravings-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cravings Food Delivery Platform Monorepo Orchestration",
+  "type": "module",
+  "scripts": {
+    "dev": "node ./scripts/dev.cjs",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}

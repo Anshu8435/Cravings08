@@ -1,0 +1,32 @@
+# Node / package managers
+node_modules/
+**/node_modules/
+.npm/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local development helper scripts (runs locally on your PC, ignored from git)
+scripts/
+.prettierrc
+
+# Build output
+client/dist/
+dist/
+server/coverage/
+
+# System / editor
+.DS_Store
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+
+# Test and coverage artifacts
+coverage/
+*.lcov
+
+# Generated files
+*.tsbuildinfo
