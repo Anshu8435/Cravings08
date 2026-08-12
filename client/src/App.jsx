@@ -14,6 +14,7 @@ import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Test from "./pages/Test";
 import OrderNow from "./pages/OrderNow";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
+import cart from "./components/Cart.jsx"
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           path="/restaurant-details/:restaurantId"
           element={<RestaurantDetailsPage />}
         />
+        <Route path="/cart" element = {<cart/>}/>
       </Routes>
       <Footer />
     </>
