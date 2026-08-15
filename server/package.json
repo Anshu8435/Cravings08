@@ -1,15 +1,16 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend API for Cravings",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
     "dev": "nodemon index.js",
     "seed": "node ./src/seeders/seed.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Raj Gupta",
   "license": "ISC",
   "type": "module",
   "dependencies": {
@@ -18,12 +19,15 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "duckduckgo-images-api": "^1.0.5",
     "express": "^5.2.1",
+    "googlethis": "^1.8.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.3",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
-    "nodemailer": "^9.0.3"
+    "nodemailer": "^9.0.3",
+    "razorpay": "^2.9.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

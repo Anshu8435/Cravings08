@@ -1,14 +1,11 @@
 import nodemailer from "nodemailer";
-// import dotenv from "dotenv";
-// dotenv.config();
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const sendEmail = async (to, subject, message) => {
   try {
-    //   console.log("Started Sending Email");
-
-    //    console.log(process.env.GMAIL_USERNAME);
-
-    //    console.log(process.env.GMAIL_PASSCODE);
+    console.log("Started Sending Email");
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -18,30 +15,25 @@ const sendEmail = async (to, subject, message) => {
       },
     });
 
-    //   console.log("3....2....1....");
+    console.log("Transporter created successfully");
 
-    const mailOption = {
+    const mailOptions = {
       from: process.env.GMAIL_USERNAME,
       to,
       subject,
       html: message,
     };
 
-    //   console.log("Sending Email");
+    const info = await transporter.sendMail(mailOptions);
 
-    const res = await transporter.sendMail(mailOption);
-    console.log(res);
+    console.log("Email sent successfully");
+    console.log(info);
+
+    return info;
   } catch (error) {
-    console.log(error);
+    console.error("Error sending email:", error);
     throw error;
   }
 };
 
 export default sendEmail;
-
-// sendEmail(
-//   "receiversemail@gmail.com",
-//   "test Email",
-//   `<h1 style='color:blue;'>Test Message</h1>
-//   <p style='color:red;'>Batch 6</p>`,
-// );
