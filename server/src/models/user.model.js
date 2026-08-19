@@ -11,21 +11,25 @@ const UserSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    googleId: {
+      type: String,
+      default: null,
+    },
     phone: {
       type: String,
-      required: true,
+      required: function() { return !this.googleId; },
     },
     dob: {
       type: Date,
-      required: true,
+      default: null,
     },
     gender: {
       type: String,
-      required: true,
+      default: null,
     },
     password: {
       type: String,
-      required: true,
+      required: function() { return !this.googleId; },
     },
     photo: {
       url: {
@@ -42,6 +46,20 @@ const UserSchema = mongoose.Schema(
       required: true,
       default: "customer",
     },
+    lastPasswordChange: {
+      type: Date,
+      default: null,
+    },
+    addresses: [
+      {
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        pincode: { type: String, required: true },
+        country: { type: String, required: true },
+        isDefault: { type: Boolean, default: false }
+      }
+    ],
   },
   {
     timestamps: true,

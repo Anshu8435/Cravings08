@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const RestaurantSchema = mongoose.Schema(
   {
     managerId: {
@@ -7,12 +6,13 @@ const RestaurantSchema = mongoose.Schema(
       ref: "user",
       required: true,
     },
+
     restaurantName: { type: String, required: true },
-    address: { type: String, default: "" },
-    city: { type: String, default: "" },
-    state: { type: String, default: "" },
-    pinCode: { type: String, default: "" },
-    country: { type: String, default: "" },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pinCode: { type: String, required: true },
+    country: { type: String, required: true },
     geoLocation: {
       type: {
         lat: {
@@ -24,14 +24,10 @@ const RestaurantSchema = mongoose.Schema(
       },
     },
 
-    legal: {
+    documents: {
       type: {
         legalName: { type: String, required: true },
         companyType: { type: String, required: true },
-      },
-    },
-    documents: {
-      type: {
         gstCertificate: { type: String, required: true },
         fssaiCertificate: { type: String, required: true },
         panCard: { type: String, required: true },
@@ -63,6 +59,7 @@ const RestaurantSchema = mongoose.Schema(
       default: "inactive",
     },
     averageRating: { type: Number, default: 0 },
+    numReviews: { type: Number, default: 0 },
     cuisineTypes: {
       type: [String],
       required: true,
@@ -74,12 +71,14 @@ const RestaurantSchema = mongoose.Schema(
           publicId: { type: String, required: true },
         },
       ],
+      required: true,
     },
     coverImage: {
       type: {
         url: { type: String, required: true },
         publicId: { type: String, required: true },
       },
+      required: true,
     },
     description: { type: String, required: true },
     restaurantType: {
