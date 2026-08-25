@@ -2,13 +2,12 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { genToken } from "../utils/auth.service.js";
 import OTP from "../models/otp.model.js";
-
 import { genOTPToken } from "../utils/auth.service.js";
 import { sendOTPEmail } from "../utils/email.service.js";
 
 export const RegisterUser = async (req, res, next) => {
   try {
-    const { fullName, email, password, phone, gender, dob, userType } =
+    const { fullName, email, password, phone, userType } =
       req.body;
 
     if (
@@ -16,8 +15,6 @@ export const RegisterUser = async (req, res, next) => {
       !email ||
       !password ||
       !phone ||
-      !gender ||
-      !dob ||
       !userType
     ) {
       const error = new Error("All fields Required");
@@ -46,16 +43,13 @@ export const RegisterUser = async (req, res, next) => {
       email,
       password: hashedPassword,
       phone,
-      gender,
-      dob,
       photo,
       userType,
     });
 
     res.status(201).json({ message: "User Created Successfully" });
   } catch (error) {
-    console.log(error.message);
-    next();
+    next(error);
   }
 };
 
@@ -90,19 +84,21 @@ export const LoginUser = async (req, res, next) => {
       data: existingUser,
     });
   } catch (error) {
-    console.log(error.message);
-    next();
+    next(error);
   }
 };
 
 export const LogoutUser = async (req, res, next) => {
   try {
-    res.clearCookie("Oreo", { maxAge: 0 });
+    res.clearCookie("Oreo", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
 
     res.status(200).json({ message: "Logout Sucessfully" });
   } catch (error) {
-    console.log(error.message);
-    next();
+    next(error);
   }
 };
 
@@ -122,6 +118,20 @@ export const SendOtp = async (req, res, next) => {
       return next(error);
     }
 
+    // Check if 24 hours have passed since the last password change
+    if (existingUser.lastPasswordChange) {
+      const hoursSinceLastChange =
+        (new Date() - new Date(existingUser.lastPasswordChange)) /
+        (1000 * 60 * 60);
+      if (hoursSinceLastChange < 24) {
+        const error = new Error(
+          "You can only change your password once every 24 hours",
+        );
+        error.statusCode = 400;
+        return next(error);
+      }
+    }
+
     // Generate and send OTP here
     const newOTP = (Math.floor(Math.random() * 1000000) + 100000)
       .toString()
@@ -138,12 +148,11 @@ export const SendOtp = async (req, res, next) => {
       email,
       otp: hashedOTP,
     });
-    await sendOTPEmail(email, newOTP);
+    await sendOTPEmail(email, newOTP, existingUser.fullName);
 
     res.status(200).json({ message: `OTP sent on '${email}'` });
   } catch (error) {
-    console.log(error.message);
-    next();
+    next(error);
   }
 };
 export const VerifyOtp = async (req, res, next) => {
@@ -184,8 +193,7 @@ export const VerifyOtp = async (req, res, next) => {
       .status(200)
       .json({ message: "OTP verified. Create You New Password Now" });
   } catch (error) {
-    console.log(error.message);
-    next();
+    next(error);
   }
 };
 export const ResetPassword = async (req, res, next) => {
@@ -197,12 +205,13 @@ export const ResetPassword = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     currentUser.password = hashedPassword;
+    currentUser.lastPasswordChange = new Date();
 
     await currentUser.save();
 
     res.status(200).json({ message: "Password Changed" });
   } catch (error) {
-    console.log(error.message);
-    next();
+    next(error);
   }
 };
+
