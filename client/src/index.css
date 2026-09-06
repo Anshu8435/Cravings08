@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 * {
+
   box-sizing: border-box;
 }
 
@@ -46,6 +47,8 @@ button {
   /* Error */
   --color-error: #ef4444;
   --color-error-content: #ffffff;
+
+  --color-star:#3F3F46;
 }
 
 /* Remove number input spinner buttons */
@@ -66,11 +69,16 @@ input[type="password"]::-ms-reveal {
   display: none;
 }
 
-
-textarea:disabled,
-select:disabled,
-input:disabled {
-  cursor: not-allowed;
+/* View Only Mode Styles */
+.view-only-mode input:disabled,
+.view-only-mode textarea:disabled,
+.view-only-mode select:disabled {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-base-content);
+  opacity: 1;
+  padding-left: 0;
+  padding-right: 0;
+  appearance: none;
+  -webkit-appearance: none;
 }
-
-
