@@ -1,4 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import api from "../config/ApiConfig";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -13,6 +15,7 @@ export const AuthProvider = ({ children }) => {
     setIsLogin(!!user);
     setRole(user ? user.userType : null);
   }, [user]);
+
 
   const value = { user, isLogin, role, setUser, setIsLogin, setRole };
 
