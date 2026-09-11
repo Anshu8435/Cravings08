@@ -1,12 +1,13 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoCircle from "../assets/circleLogo.png";
+import { useAuth } from "../context/AuthContext";
 
 const Footer = () => {
   const location = useLocation().pathname;
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
+  const { isLogin, role } = useAuth();
 
   if (location.toLowerCase().includes("dashboard")) return null;
 
@@ -20,9 +21,9 @@ const Footer = () => {
           restaurants and riders. ---
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
           {/* About Section */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <img
               src={logoCircle}
               alt="Cravings Logo"
@@ -67,7 +68,13 @@ const Footer = () => {
               </li>
               <li
                 className="text-sm hover:text-(--color-primary) transition-colors duration-200 cursor-pointer"
-                onClick={() => navigate("/restaurant-dashboard")}
+                onClick={() => {
+                  if (isLogin && role === "restaurant") {
+                    navigate("/restaurant-dashboard");
+                  } else {
+                    navigate("/login");
+                  }
+                }}
               >
                 Restaurant Dashboard
               </li>
@@ -86,7 +93,13 @@ const Footer = () => {
               </li>
               <li
                 className="text-sm hover:text-(--color-primary) transition-colors duration-200 cursor-pointer"
-                onClick={() => navigate("/rider-dashboard")}
+                onClick={() => {
+                  if (isLogin && role === "rider") {
+                    navigate("/rider-dashboard");
+                  } else {
+                    navigate("/login");
+                  }
+                }}
               >
                 Rider Dashboard
               </li>
@@ -125,7 +138,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Copyright */}
           <p className="text-sm text-(--color-neutral-content) mb-4 md:mb-0">
-            &copy; {currentYear} Cravings. All rights reserved.
+            &copy; {currentYear} Raj Cravings. All rights reserved.
           </p>
 
           {/* Legal Links */}
