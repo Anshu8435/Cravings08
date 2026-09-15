@@ -49,7 +49,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    console.log("Login submitted:", formData);
+
 
     try {
       const res = await api.post("/auth/login", {
@@ -74,7 +74,7 @@ const Login = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Unknown error occurred during Login. Please try again.",
+          "Unknown error occurred during registration. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -83,7 +83,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="h-[90vh] bg-[url('/foodTable.webp')] flex items-center justify-start bg-cover bg-center p-10 md:ps-30">
+      <div className="h-[90vh] bg-[url('/foodTable.webp')] bg-black/60 bg-blend-overlay flex items-center justify-start bg-cover bg-center p-10 md:ps-30">
         <div className="bg-white rounded-lg shadow-md px-10 py-6 max-w-md w-full">
           <h1 className="text-3xl font-bold text-(--color-primary) mb-2 text-center">
             Welcome Back
@@ -91,6 +91,8 @@ const Login = () => {
           <p className="text-(--color-secondary) text-center mb-6">
             Login to your Cravings account
           </p>
+
+
 
           {/* Login Form */}
           <form onSubmit={handleSubmit}>

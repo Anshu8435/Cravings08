@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "../config/ApiConfig";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const userType = useParams().userType; // Get userType from URL params (if needed)
@@ -11,8 +12,6 @@ const Register = () => {
     fullName: "",
     email: "",
     phone: "",
-    gender: "",
-    dob: "",
     password: "",
     confirmPassword: "",
     agreeTerms: false,
@@ -42,8 +41,6 @@ const Register = () => {
     if (!data.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!data.email.trim()) newErrors.email = "Email is required";
     if (!data.phone.trim()) newErrors.phone = "Phone number is required";
-    if (!data.gender) newErrors.gender = "Gender is required";
-    if (!data.dob) newErrors.dob = "Date of birth is required";
     if (!data.password || data.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
     if (!data.confirmPassword)
@@ -68,7 +65,7 @@ const Register = () => {
       return;
     }
 
-    console.log("Form submitted:", formData);
+
 
     try {
       const res = await api.post("/auth/register", {
@@ -80,7 +77,7 @@ const Register = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Unknown error occurred during registration. Please try again.",
+        "Unknown error occurred during registration. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -89,21 +86,21 @@ const Register = () => {
   };
 
   return (
-    <div className="h-[90vh] bg-[url('/foodTable.webp')] flex items-center justify-end bg-cover bg-center p-10 md:pe-30">
-      <div className="bg-white rounded-lg shadow-md px-10 py-6 max-w-md w-full overflow-y-auto max-h-[85vh]">
-        <h1 className="text-3xl font-bold text-(--color-primary) mb-2 text-center">
+    <div className="min-h-[90vh] bg-[url('/foodTable.webp')] bg-black/60 bg-blend-overlay flex items-center justify-center md:justify-end bg-cover bg-center p-2 sm:p-4 py-4 md:pe-20">
+      <div className="bg-white rounded-xl shadow-xl px-6 sm:px-10 py-8 max-w-2xl h-fit min-h-[80vh] flex flex-col justify-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-(--color-primary) mb-3 text-center">
           Create Account
         </h1>
-        <p className="text-(--color-secondary) text-center mb-4">
+        <p className="text-(--color-secondary) text-center mb-8 text-base">
           Join us as a Customer, Restaurant, or Rider
         </p>
 
         {/* User Type Selection */}
-        <div className="mb-6">
+        <div className="mb-8">
           <label className="block text-(--color-neutral) font-semibold mb-3">
             Register as:
           </label>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-3 sm:gap-5">
             {["customer", "restaurant", "rider"].map((type) => (
               <label
                 key={type}
@@ -125,152 +122,82 @@ const Register = () => {
           </div>
         </div>
 
+
+
         {/* Registration Form */}
         <form onSubmit={handleSubmit}>
-          {/* Full Name */}
-          <div className="mb-4">
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              placeholder="Enter your full name"
-              className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                errors.fullName
-                  ? "border-(--color-error) border-2"
-                  : "border-(--color-base-300)"
-              }`}
-            />
-            {errors.fullName && (
-              <span className="text-(--color-error) text-xs mt-1 block">
-                {errors.fullName}
-              </span>
-            )}
-          </div>
-
-          {/* Email */}
-          <div className="mb-4">
-            
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Enter your email"
-              className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                errors.email
-                  ? "border-(--color-error) border-2"
-                  : "border-(--color-base-300)"
-              }`}
-            />
-            {errors.email && (
-              <span className="text-(--color-error) text-xs mt-1 block">
-                {errors.email}
-              </span>
-            )}
-          </div>
-
-          {/* Phone */}
-          <div className="mb-4">
-           
-            <input
-              type="number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              placeholder="Enter your phone number"
-              className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                errors.phone
-                  ? "border-(--color-error) border-2"
-                  : "border-(--color-base-300)"
-              }`}
-            />
-            {errors.phone && (
-              <span className="text-(--color-error) text-xs mt-1 block">
-                {errors.phone}
-              </span>
-            )}
-          </div>
-
-          {/* Gender & Date of Birth */}
-          <div className="mb-4 grid grid-cols-2 gap-4">
-            <div>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                  errors.gender
-                    ? "border-(--color-error) border-2"
-                    : "border-(--color-base-300)"
-                }`}
-              >
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-              {errors.gender && (
-                <span className="text-(--color-error) text-xs mt-1 block">
-                  {errors.gender}
-                </span>
-              )}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+            {/* Full Name */}
             <div>
               <input
-                type="date"
-                name="dob"
-                value={formData.dob}
+                type="text"
+                name="fullName"
+                value={formData.fullName}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                  errors.dob
-                    ? "border-(--color-error) border-2"
-                    : "border-(--color-base-300)"
-                }`}
+                placeholder="Enter full name"
+                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${errors.fullName ? "border-(--color-error) border-2" : "border-(--color-base-300)"
+                  }`}
               />
-              {errors.dob && (
-                <span className="text-(--color-error) text-xs mt-1 block">
-                  {errors.dob}
-                </span>
-              )}
+              {errors.fullName && <span className="text-(--color-error) text-xs mt-1 block">{errors.fullName}</span>}
+            </div>
+
+            {/* Email */}
+            <div>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter email"
+                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${errors.email ? "border-(--color-error) border-2" : "border-(--color-base-300)"
+                  }`}
+              />
+              {errors.email && <span className="text-(--color-error) text-xs mt-1 block">{errors.email}</span>}
             </div>
           </div>
 
-          {/* Password */}
-          <div className="mb-4">
-          
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="Enter your password"
-              className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                errors.password
-                  ? "border-(--color-error) border-2"
-                  : "border-(--color-base-300)"
-              }`}
-            />
-            {errors.password && (
-              <span className="text-(--color-error) text-xs mt-1 block">
-                {errors.password}
-              </span>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+            {/* Phone */}
+            <div>
+              <input
+                type="number"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="Enter phone number"
+                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${errors.phone ? "border-(--color-error) border-2" : "border-(--color-base-300)"
+                  }`}
+              />
+              {errors.phone && <span className="text-(--color-error) text-xs mt-1 block">{errors.phone}</span>}
+            </div>
+
+            {/* Password */}
+            <div>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Enter password"
+                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${errors.password ? "border-(--color-error) border-2" : "border-(--color-base-300)"
+                  }`}
+              />
+              {errors.password && <span className="text-(--color-error) text-xs mt-1 block">{errors.password}</span>}
+            </div>
           </div>
 
           {/* Confirm Password */}
-          <div className="mb-6">
+          <div className="mb-5">
             <input
-              type="text"
+              type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              placeholder="Confirm your password"
-              className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                errors.confirmPassword
+              placeholder="Confirm password"
+              className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${errors.confirmPassword
                   ? "border-(--color-error) border-2"
                   : "border-(--color-base-300)"
-              }`}
+                }`}
             />
             {errors.confirmPassword && (
               <span className="text-(--color-error) text-xs mt-1 block">
@@ -278,7 +205,7 @@ const Register = () => {
               </span>
             )}
           </div>
-          <div className="mb-6">
+          <div className="mb-8">
             <label className="flex items-start gap-2 cursor-pointer text-(--color-secondary)">
               <input
                 type="checkbox"
@@ -304,7 +231,7 @@ const Register = () => {
           {/* Register Button */}
           <button
             type="submit"
-            className="w-full py-3 bg-(--color-primary) text-white font-semibold rounded-md hover:bg-orange-700 transition-colors duration-300 mb-4"
+            className="w-full py-3 text-lg bg-(--color-primary) text-white font-semibold rounded-md hover:bg-orange-700 transition-colors duration-300 mb-6"
           >
             {loading ? "Registering..." : "Register"}
           </button>

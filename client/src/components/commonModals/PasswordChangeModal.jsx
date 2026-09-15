@@ -1,7 +1,7 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { LuLoaderCircle } from "react-icons/lu";
+import { FaLock, FaKey, FaShieldAlt } from "react-icons/fa";
 import api from "../../config/ApiConfig";
 import toast from "react-hot-toast";
 
@@ -50,92 +50,108 @@ const PasswordChangeModal = ({ open, onClose }) => {
   };
 
   if (!open) return null;
+
   return (
-    <>
-      <div
-        className="fixed inset-0 z-999 bg-black/60 backdrop-blur-xs flex justify-center items-center"
-        // onClick={handleCloseModal}
-      >
-        <div className="bg-white w-xl rounded shadow max-h-[80vh] overflow-y-auto relative">
-          <header className="flex justify-between p-4 border-b border-(--color-secondary)">
-            <div className="font-bold text-xl text-(--color-primary)">
-              Change Password
+    <div className="fixed inset-0 z-[999] flex justify-center items-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-200">
+        
+        {/* Header */}
+        <header className="relative bg-gradient-to-r from-(--color-primary) to-orange-400 p-6 text-white text-center">
+          <button 
+            onClick={handleCloseModal}
+            className="absolute top-4 right-4 text-white/80 hover:text-white transition-transform hover:scale-110 hover:rotate-90 duration-300"
+          >
+            <IoIosCloseCircleOutline className="text-3xl" />
+          </button>
+          
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner backdrop-blur-sm">
+            <FaShieldAlt className="text-3xl text-white drop-shadow-md" />
+          </div>
+          <h2 className="text-2xl font-extrabold tracking-tight">Change Password</h2>
+          <p className="text-orange-100 text-sm mt-1 font-medium">Keep your account secure by updating your password.</p>
+        </header>
+
+        {/* Form Body */}
+        <div className="p-6 sm:p-8 space-y-5 bg-gray-50 dark:bg-gray-900/50">
+          
+          {/* Current Password */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-(--color-primary) transition-colors">
+              <FaLock />
             </div>
-            <button onClick={handleCloseModal}>
-              <IoIosCloseCircleOutline className="text-red-400 hover:text-red-700 text-2xl" />
-            </button>
-          </header>
-          <main>
-            <div className="p-6 space-y-4">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="oldPassword" className="font-semibold">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  id="oldPassword"
-                  name="oldPassword"
-                  value={formData.oldPassword}
-                  onChange={handleChange}
-                  className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="newPassword" className="font-semibold">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="confirmNewPassword" className="font-semibold">
-                  Confirm New Password
-                </label>
-                <input
-                  type="text"
-                  id="confirmNewPassword"
-                  name="confirmNewPassword"
-                  value={formData.confirmNewPassword}
-                  onChange={handleChange}
-                  className="border border-(--color-secondary) rounded px-3 py-2 disabled:bg-(--color-secondary) disabled:text-(--color-secondary-content)"
-                  disabled={isLoading}
-                />
-              </div>
+            <input
+              type="password"
+              id="oldPassword"
+              name="oldPassword"
+              placeholder="Current Password"
+              value={formData.oldPassword}
+              onChange={handleChange}
+              className="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-(--color-primary) focus:border-transparent outline-none transition-all font-medium text-gray-800 dark:text-gray-100 shadow-sm"
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* New Password */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-(--color-primary) transition-colors">
+              <FaKey />
             </div>
-          </main>
-          <footer className="w-full p-4 border-t border-(--color-secondary) flex justify-end gap-3">
-            <button
-              onClick={handleCloseModal}
-              className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-3 py-1 rounded text-sm"
+            <input
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              placeholder="New Password"
+              value={formData.newPassword}
+              onChange={handleChange}
+              className="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-(--color-primary) focus:border-transparent outline-none transition-all font-medium text-gray-800 dark:text-gray-100 shadow-sm"
               disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
-              onClick={handleChangePassword}
+            />
+          </div>
+
+          {/* Confirm New Password */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-(--color-primary) transition-colors">
+              <FaShieldAlt />
+            </div>
+            <input
+              type="password"
+              id="confirmNewPassword"
+              name="confirmNewPassword"
+              placeholder="Confirm New Password"
+              value={formData.confirmNewPassword}
+              onChange={handleChange}
+              className="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-(--color-primary) focus:border-transparent outline-none transition-all font-medium text-gray-800 dark:text-gray-100 shadow-sm"
               disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <LuLoaderCircle className="animate-spin" /> Changing...
-                </>
-              ) : (
-                "Change Password"
-              )}
-            </button>
-          </footer>
+            />
+          </div>
         </div>
+
+        {/* Footer Actions */}
+        <footer className="p-4 sm:p-6 border-t border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row justify-end gap-3 bg-white dark:bg-gray-800 rounded-b-3xl">
+          <button
+            onClick={handleCloseModal}
+            className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm w-full sm:w-auto"
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button
+            className="px-6 py-2.5 bg-gradient-to-r from-(--color-primary) to-orange-500 text-white rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:transform-none w-full sm:w-auto"
+            onClick={handleChangePassword}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <LuLoaderCircle className="animate-spin text-lg" /> Changing...
+              </>
+            ) : (
+              "Update Password"
+            )}
+          </button>
+        </footer>
+        
       </div>
-    </>
+    </div>
   );
 };
 
