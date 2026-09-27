@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MdEdit } from "react-icons/md";
 import api from "../../../../config/ApiConfig";
 import toast from "react-hot-toast";
+import { COUNTRY_OPTIONS } from "../../../../config/countryOptions";
 
 
 const RestaurantAddress = () => {
@@ -157,14 +158,18 @@ const RestaurantAddress = () => {
           </div>
           <div className="w-full">
             <label className="text-xs font-semibold">Country</label>
-            <input
-              type="text"
+            <select
               name="country"
               value={restaurantAddressFormData?.country || ""}
               onChange={handleRestaurantAddressChange}
               className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurantAddress ? "bg-white" : "bg-(--color-base-100)"} rounded`}
               disabled={!editingRestaurantAddress}
-            />
+            >
+              <option value="">Select Country</option>
+              {COUNTRY_OPTIONS.map((country) => (
+                <option key={country} value={country}>{country}</option>
+              ))}
+            </select>
           </div>
 
           <div className="w-full grid grid-cols-2 gap-2">

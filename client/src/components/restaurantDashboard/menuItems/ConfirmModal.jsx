@@ -1,133 +1,120 @@
 import React from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import toast from "react-hot-toast";
-import api from "../../../config/ApiConfig";
+import { FaExclamationTriangle, FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 
-const modalConfig = {
-  delete: {
-    heading: "Confirm Deletion",
-    description: "This will remove the item from your active menu.",
-    confirmLabel: "Delete Item",
-    confirmClass: "bg-red-600 hover:bg-red-700 text-white",
-  },
-  topRated: {
-    heading: "Change Top Rated",
-    description: "Toggle this item's top-rated badge.",
-    confirmLabel: "Confirm",
-    confirmClass: "bg-(--color-primary) hover:opacity-90 text-(--color-primary-content)",
-  },
-  recommended: {
-    heading: "Change Recommendation",
-    description: "Toggle this item's recommended badge.",
-    confirmLabel: "Confirm",
-    confirmClass: "bg-(--color-primary) hover:opacity-90 text-(--color-primary-content)",
-  },
-  new: {
-    heading: "Change New Badge",
-    description: "Toggle this item's new badge.",
-    confirmLabel: "Confirm",
-    confirmClass: "bg-(--color-primary) hover:opacity-90 text-(--color-primary-content)",
-  },
-};
-
-const ConfirmModal = ({
-  selectedItem,
-  modalMode,
-  isOpen,
-  onClose,
-  onActionSuccess,
-}) => {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const currentConfig = modalConfig[modalMode] || {
-    heading: "Are you sure?",
-    description: "Please confirm this action.",
-    confirmLabel: "Confirm",
-    confirmClass: "bg-(--color-primary) hover:opacity-90 text-(--color-primary-content)",
-  };
-
-  const handleConfirm = async () => {
-    if (!selectedItem?._id) {
-      toast.error("Invalid item selected.");
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-
-      if (modalMode === "delete") {
-        const response = await api.delete(
-          `/restaurant/menu-item/${selectedItem._id}`,
-        );
-        toast.success(response.data.message || "Item deleted successfully");
-      } else {
-        const controlMap = {
-          topRated: "isTopRated",
-          recommended: "isRecommended",
-          new: "isNew",
-        };
-
-        const control = controlMap[modalMode];
-        const response = await api.patch(
-          `/restaurant/menu-item/${selectedItem._id}/control?control=${encodeURIComponent(control)}`,
-        );
-        toast.success(response.data.message || "Item control updated");
-      }
-
-      if (onActionSuccess) {
-        await onActionSuccess();
-      }
-
-      onClose();
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Unable to complete this action. Please try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+const ConfirmModal = ({ selectedItem, modalMode, isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
+
+  const isDelete = modalMode === "delete";
+
+  const getModalConfig = () => {
+    switch (modalMode) {
+      case "delete":
+        return {
+          title: "Delete Menu Item",
+          desc: "Are you sure you want to delete this item? This action cannot be undone.",
+          icon: <FaTrashAlt size={28} className="text-red-500" />,
+          bgClass: "bg-red-50",
+          iconBg: "bg-red-100",
+          btnClass: "bg-gradient-to-r from-red-500 to-rose-600 hover:shadow-red-500/30 text-white shadow-lg",
+          btnText: "Yes, Delete It"
+        };
+      case "topRated":
+        return {
+          title: "Update Top Rated Status",
+          desc: "Are you sure you want to change the Top Rated status of this item?",
+          icon: <FaInfoCircle size={32} className="text-(--color-primary)" />,
+          bgClass: "bg-orange-50",
+          iconBg: "bg-orange-100",
+          btnClass: "bg-gradient-to-r from-(--color-primary) to-orange-500 hover:shadow-orange-500/30 text-white shadow-lg",
+          btnText: "Confirm Update"
+        };
+      case "recommended":
+        return {
+          title: "Update Recommended Status",
+          desc: "Are you sure you want to change the Recommended status of this item?",
+          icon: <FaInfoCircle size={32} className="text-(--color-primary)" />,
+          bgClass: "bg-orange-50",
+          iconBg: "bg-orange-100",
+          btnClass: "bg-gradient-to-r from-(--color-primary) to-orange-500 hover:shadow-orange-500/30 text-white shadow-lg",
+          btnText: "Confirm Update"
+        };
+      case "new":
+        return {
+          title: "Update New Status",
+          desc: "Are you sure you want to change the New status of this item?",
+          icon: <FaInfoCircle size={32} className="text-(--color-primary)" />,
+          bgClass: "bg-orange-50",
+          iconBg: "bg-orange-100",
+          btnClass: "bg-gradient-to-r from-(--color-primary) to-orange-500 hover:shadow-orange-500/30 text-white shadow-lg",
+          btnText: "Confirm Update"
+        };
+      default:
+        return {
+          title: "Are you sure?",
+          desc: "Do you want to proceed with this action?",
+          icon: <FaExclamationTriangle size={32} className="text-yellow-500" />,
+          bgClass: "bg-yellow-50",
+          iconBg: "bg-yellow-100",
+          btnClass: "bg-gradient-to-r from-yellow-500 to-amber-500 hover:shadow-yellow-500/30 text-white shadow-lg",
+          btnText: "Confirm"
+        };
+    }
+  };
+
+  const config = getModalConfig();
+
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-          <div className=" text-2xl flex justify-between items-center mb-4 border-b border-(--color-secondary) pb-2">
-            <h1 className="text-(--color-primary)">Are you sure?</h1>
-
+      <div 
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        onClick={onClose}
+      >
+        <div 
+          className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Header Region */}
+          <div className="relative pt-8 px-6 flex flex-col items-center text-center">
             <button
-              className="text-red-300 hover:text-red-500"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-transform hover:scale-110 hover:rotate-90 duration-300"
               onClick={onClose}
-              disabled={isSubmitting}
             >
-              <IoMdCloseCircleOutline size={24} />
+              <IoMdCloseCircleOutline size={28} />
             </button>
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-(--color-primary)">
-              {currentConfig.heading}
-            </h2>
-            <p className="text-sm text-gray-600">{currentConfig.description}</p>
-            <p className="text-sm">
-              Item: <span className="font-semibold">{selectedItem?.itemName}</span>
+            
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${config.iconBg} shadow-inner`}>
+              {config.icon}
+            </div>
+            
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
+              {config.title}
+            </h1>
+            
+            {selectedItem && (
+              <p className="text-sm font-bold text-(--color-primary) mb-2">
+                Target: {selectedItem.itemName}
+              </p>
+            )}
+
+            <p className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-6 px-4">
+              {config.desc}
             </p>
           </div>
-          <div className="mt-6 flex justify-end gap-2 border-t border-(--color-secondary) pt-3">
+
+          {/* Action Buttons */}
+          <div className="bg-gray-50 dark:bg-gray-900/50 p-6 border-t border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row justify-center gap-3 w-full">
             <button
-              className="bg-(--color-secondary) disabled:bg-(--color-secondary)/60 text-(--color-secondary-content) px-4 py-2 rounded"
+              className="px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full sm:w-1/2"
               onClick={onClose}
-              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
-              className={`px-4 py-2 rounded disabled:opacity-60 ${currentConfig.confirmClass}`}
-              onClick={handleConfirm}
-              disabled={isSubmitting}
+              className={`px-6 py-3 rounded-xl font-bold hover:-translate-y-0.5 transition-all w-full sm:w-1/2 ${config.btnClass}`}
+              onClick={onConfirm}
             >
-              {isSubmitting ? "Please wait..." : currentConfig.confirmLabel}
+              {config.btnText}
             </button>
           </div>
         </div>

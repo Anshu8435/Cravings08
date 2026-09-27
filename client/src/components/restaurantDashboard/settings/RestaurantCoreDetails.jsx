@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import PasswordChangeModal from "../../commonModals/PasswordChangeModal";
 import RunningLoader from "../../../assets/runningLoader.gif";
+import { COUNTRY_OPTIONS } from "../../../config/countryOptions";
 
 const ResturantCoreDetails = () => {
   const { user, setUser } = useAuth();
@@ -243,14 +244,18 @@ const ResturantCoreDetails = () => {
                   </div>
                   <div className="w-full">
                     <label className="text-xs font-semibold">Country</label>
-                    <input
-                      type="text"
+                    <select
                       name="country"
                       value={restaurantFormData?.country || ""}
                       onChange={handleRestaurantChange}
                       className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurant ? "bg-white" : "bg-(--color-base-100)"} rounded`}
                       disabled={!editingRestaurant}
-                    />
+                    >
+                      <option value="">Select Country</option>
+                      {COUNTRY_OPTIONS.map((country) => (
+                        <option key={country} value={country}>{country}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="w-full grid grid-cols-2 gap-2">
@@ -372,14 +377,18 @@ const ResturantCoreDetails = () => {
                   </div>
                   <div className="w-full">
                     <label className="text-xs font-semibold">GST Number</label>
-                    <input
-                      type="text"
-                      name="gst"
+                    <select
+                      name="country"
                       value={restaurantFormData?.country || ""}
                       onChange={handleRestaurantChange}
                       className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurant ? "bg-white" : "bg-(--color-base-100)"} rounded`}
                       disabled={!editingRestaurant}
-                    />
+                    >
+                      <option value="">Select Country</option>
+                      {COUNTRY_OPTIONS.map((country) => (
+                        <option key={country} value={country}>{country}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="w-full">
