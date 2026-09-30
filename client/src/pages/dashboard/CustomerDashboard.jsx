@@ -1,16 +1,33 @@
 import React from "react";
-import CustomerSidebar from "../../components/customerDashboard/CustomerSidebar";
+import Sidebar from "../../components/Sidebar";
 import CustomerOverview from "../../components/customerDashboard/CustomerOverview";
 import CustomerOrders from "../../components/customerDashboard/CustomerOrders";
 import CustomerSetting from "../../components/customerDashboard/CustomerSetting";
+import { MdDashboard } from "react-icons/md";
+import { FaShoppingCart } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { FiMenu, FiX } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const CustomerDashboard = () => {
   const { isLogin, role } = useAuth();
   const navigate = useNavigate();
-  const active = useLocation().state?.activeTab;
+  const location = useLocation();
+  const active = location.state?.activeTab;
   const [activeTab, setActiveTab] = React.useState(active || "overview");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
+  const mainTabs = [
+    { name: "Overview", value: "overview", icon: <MdDashboard size={20} /> },
+    { name: "Orders", value: "orders", icon: <FaShoppingCart size={20} /> },
+  ];
+  const settingsTab = { name: "Settings", value: "settings", icon: <IoMdSettings size={20} /> };
 
   if (!isLogin || role !== "customer") {
     return (
@@ -31,18 +48,48 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <>
-      <div className="h-[91vh] flex gap-2 p-2">
-        <div className="w-3/17 bg-(--color-base-200) p-4 rounded-lg shadow-md h-full">
-          <CustomerSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        </div>
-        <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
-          {activeTab === "overview" && <CustomerOverview />}
-          {activeTab === "orders" && <CustomerOrders />}
-          {activeTab === "settings" && <CustomerSetting />}
-        </div>
+    <div className="h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden relative">
+      {/* Mobile Header for Hamburger */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-40 shrink-0 shadow-sm">
+        <span className="font-bold text-xl text-gray-800 dark:text-white">Customer Dashboard</span>
+        <button 
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-(--color-primary) hover:bg-gray-200 transition-colors"
+        >
+          {isMobileSidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+        </button>
       </div>
-    </>
+
+      {/* Sidebar Wrapper */}
+      <div className={`
+        fixed lg:relative top-[64px] lg:top-0 left-0 h-[calc(100vh-64px)] lg:h-full shrink-0 z-50
+        transition-transform duration-300 ease-in-out
+        ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+      `}>
+        <Sidebar 
+          activeTab={activeTab} 
+          setActiveTab={(tab) => { setActiveTab(tab); setIsMobileSidebarOpen(false); }} 
+          mainTabs={mainTabs} 
+          settingsTab={settingsTab} 
+          subtitle="Customer" 
+        />
+      </div>
+
+      {/* Overlay for mobile */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden top-[64px]"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 bg-(--color-base-100) p-4 rounded-2xl shadow-xl h-full overflow-y-auto w-full">
+        {activeTab === "overview" && <CustomerOverview />}
+        {activeTab === "orders" && <CustomerOrders />}
+        {activeTab === "settings" && <CustomerSetting />}
+      </div>
+    </div>
   );
 };
 
