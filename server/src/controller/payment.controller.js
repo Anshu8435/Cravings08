@@ -12,7 +12,7 @@ const hasValidRazorpayKeys = () => {
     keySecret &&
     !keyId.includes('example') &&
     !keyId.includes('placeholder') &&
-    !keyId.includes('mock')
+    !keyId.includes('mock'),
   );
 };
 
@@ -143,9 +143,7 @@ export const VerifyRazorpayPayment = async (req, res, next) => {
     }
 
     const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
-    const isMock =
-      razorpay_order_id.startsWith('order_mock_') ||
-      !hasValidRazorpayKeys();
+    const isMock = razorpay_order_id.startsWith('order_mock_') || !hasValidRazorpayKeys();
 
     if (isMock) {
       if (order) {

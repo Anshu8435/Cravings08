@@ -9,7 +9,10 @@ const __dirname = path.dirname(__filename);
 export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
   try {
     const gmailUser = (process.env.GMAIL_USERNAME || process.env.EMAIL_USER || '').trim();
-    const gmailPass = (process.env.GMAIL_PASSCODE || process.env.EMAIL_PASS || '').replace(/\s+/g, '');
+    const gmailPass = (process.env.GMAIL_PASSCODE || process.env.EMAIL_PASS || '').replace(
+      /\s+/g,
+      '',
+    );
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (!gmailUser || !gmailPass) {

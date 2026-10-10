@@ -3,7 +3,9 @@ import mongoose from 'mongoose';
 const connectDB = async () => {
   const dbUri = process.env.MONGO_DB_URI || process.env.MONGO_URI || process.env.MONGODB_URI;
   if (!dbUri) {
-    console.error('Fatal: MongoDB connection URI is missing! Set MONGO_DB_URI or MONGO_URI in environment.');
+    console.error(
+      'Fatal: MongoDB connection URI is missing! Set MONGO_DB_URI or MONGO_URI in environment.',
+    );
     process.exit(1);
   }
 

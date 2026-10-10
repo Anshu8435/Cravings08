@@ -110,11 +110,11 @@ export const updateMenuItem = async (req, res, next) => {
     if (req.body.isNew !== undefined)
       setFields['menuItems.$.isNew'] = req.body.isNew === 'true' || req.body.isNew === true;
 
-    const updatedMenu = await Menu.findOneAndUpdate(
-      { restaurantId, 'menuItems._id': itemId },
-      { $set: setFields },
-      { new: true },
-    );
+    const filter = restaurantId
+      ? { $or: [{ restaurantId, 'menuItems._id': itemId }, { 'menuItems._id': itemId }] }
+      : { 'menuItems._id': itemId };
+
+    const updatedMenu = await Menu.findOneAndUpdate(filter, { $set: setFields }, { new: true });
 
     if (!updatedMenu) {
       return res.status(404).json({ success: false, message: 'Menu item not found' });
@@ -139,8 +139,12 @@ export const deleteMenuItem = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Restaurant ID is required' });
     }
 
+    const filter = restaurantId
+      ? { $or: [{ restaurantId, 'menuItems._id': itemId }, { 'menuItems._id': itemId }] }
+      : { 'menuItems._id': itemId };
+
     const updatedMenu = await Menu.findOneAndUpdate(
-      { restaurantId },
+      filter,
       { $pull: { menuItems: { _id: itemId } } },
       { new: true },
     );
