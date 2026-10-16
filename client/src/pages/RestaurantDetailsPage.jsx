@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../config/ApiConfig';
 import toast from 'react-hot-toast';
-import NoDataFound from '../components/NoDataFound';
-import NoDataFoundGif from '../assets/NoDataFound.gif';
-import {
-  IoArrowBack,
-  IoStar,
-  IoLocationOutline,
-  IoTimeOutline,
-  IoSparklesOutline,
-} from 'react-icons/io5';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
@@ -18,11 +9,10 @@ const RestaurantDetailsPage = () => {
   const { restaurantId } = useParams();
   const navigate = useNavigate();
   const { isLogin } = useAuth();
+  const { cart, handleAddToCart, handleRemoveFromCart } = useCart();
 
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { getCartQuantity, handleAddToCart, handleRemoveFromCart } = useCart();
 
   const fetchRestaurantDetails = async () => {
     try {
@@ -30,9 +20,7 @@ const RestaurantDetailsPage = () => {
       const response = await api.get(`/public/restaurant-detail/${restaurantId}`);
       setRestaurantDetails(response.data.data);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || 'Could not load restaurant menu. Please try again.',
-      );
+      toast.error('Could not load restaurant menu. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -42,231 +30,215 @@ const RestaurantDetailsPage = () => {
     fetchRestaurantDetails();
   }, [restaurantId]);
 
+  const getItemQuantity = (itemId) => {
+    const itemInCart = cart.find((c) => c.item._id === itemId);
+    return itemInCart ? itemInCart.quantity : 0;
+  };
+
   const onAddItem = (item) => {
-    if (!isLogin) {
-      toast.error('Please log in to add items to your cart.');
-      navigate('/login');
-      return;
-    }
-    handleAddToCart({ ...item, restaurantId: restaurantDetails?.restaurantId?._id });
+    handleAddToCart({
+      ...item,
+      restaurantId: restaurantDetails?.restaurantId?._id || restaurantId,
+    });
+    toast.success(`${item.itemName} added to your basket`);
   };
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#080a11] text-white">
-        <img
-          src={NoDataFoundGif}
-          alt="Loading..."
-          className="w-32 h-32 object-contain filter invert opacity-80"
-        />
-        <h2 className="mt-4 text-xl font-black font-['Space_Grotesk'] text-[#ff5400] animate-pulse">
-          Curating Handcrafted Menu...
-        </h2>
-      </div>
+      <main className="page-wrap wrap">
+        <div className="empty-state" style={{ padding: '80px 20px' }}>
+          <span className="empty-mark">⏳</span>
+          <h2>Preparing menu details…</h2>
+          <p>Connecting with kitchen to fetch latest dishes.</p>
+        </div>
+      </main>
     );
   }
 
   if (!restaurantDetails) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#080a11] text-white p-6">
-        <NoDataFound height="auto" width="100%" text="Restaurant Not Found" />
-        <button
-          onClick={() => navigate('/order-now')}
-          className="mt-6 bg-gradient-to-r from-[#ff5400] to-[#e11d48] text-white px-8 py-3 rounded-2xl shadow-lg font-black hover:scale-105 active:scale-95 transition"
-        >
-          Explore Other Haute Kitchens
-        </button>
-      </div>
+      <main className="page-wrap wrap">
+        <div className="empty-state" style={{ padding: '80px 20px' }}>
+          <span className="empty-mark">⌕</span>
+          <h2>Restaurant not found</h2>
+          <p>We could not find the requested restaurant.</p>
+          <Link to="/order-now" className="button button-primary" style={{ marginTop: '16px' }}>
+            Back to restaurants →
+          </Link>
+        </div>
+      </main>
     );
   }
 
   const restaurant = restaurantDetails.restaurantId;
   const menuItems = restaurantDetails.menuItems || [];
 
-  const defaultRestaurantImage =
-    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop';
+  const defaultRestaurantImage = '/assets/bitehero-food-hero.png';
   const restaurantImage =
     restaurant?.coverImage?.url || restaurant?.restaurantImage?.[0]?.url || defaultRestaurantImage;
 
   return (
-    <div className="min-h-screen bg-[#080a11] pb-24 font-sans text-gray-100 selection:bg-[#ff5400] selection:text-white">
-      {/* Restaurant Header Banner Area */}
-      <div className="bg-[#0e121d] border-b border-white/10 shadow-2xl relative z-10 overflow-hidden">
-        {/* Ambient glow */}
-        <div className="absolute top-0 right-1/4 w-[450px] h-[300px] bg-[#ff5400]/10 rounded-full blur-[140px] pointer-events-none" />
+    <main className="page-wrap wrap">
+      {/* Breadcrumb */}
+      <div className="breadcrumb">
+        <Link to="/">Home</Link>
+        <span>›</span>
+        <Link to="/order-now">Order now</Link>
+        <span>›</span>
+        <span>{restaurant.restaurantName}</span>
+      </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8 relative z-10">
-          {/* Back button */}
-          <button
-            onClick={() => navigate('/order-now')}
-            className="flex items-center text-[#ff5400] font-black text-xs sm:text-sm mb-6 hover:translate-x-[-4px] transition-transform"
-          >
-            <IoArrowBack className="mr-2" size={18} />
-            Back to Kitchens Catalog
-          </button>
+      {/* Hero Banner */}
+      <section className="restaurant-detail-hero">
+        <img src={restaurantImage} alt={restaurant.restaurantName} />
+        <div className="restaurant-detail-overlay">
+          <span className="sample-tag">VERIFIED KITCHEN</span>
+          <p className="eyebrow eyebrow-light">
+            {restaurant.cuisineTypes ? restaurant.cuisineTypes.join(' · ') : 'Curated Cuisine'}
+          </p>
+          <h1>{restaurant.restaurantName}</h1>
+          <p>
+            {restaurant.address || restaurant.city || 'Express Delivery'} · Verified Cravings
+            Partner
+          </p>
+        </div>
+      </section>
 
-          {/* Restaurant Info Card */}
-          <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-start">
-            <div className="w-full md:w-80 h-56 rounded-3xl overflow-hidden shadow-2xl shrink-0 border border-white/10 bg-black">
-              <img
-                src={restaurantImage}
-                alt={restaurant?.restaurantName}
-                className="w-full h-full object-cover"
-              />
-            </div>
+      {/* Detail Meta Strip */}
+      <div className="detail-meta-strip">
+        <span>
+          <strong>Rating</strong>
+          <small>
+            ★ {restaurant.averageRating || '4.8'} ({restaurant.numReviews || 24} reviews)
+          </small>
+        </span>
+        <span>
+          <strong>Hours</strong>
+          <small>
+            {restaurant.openingHours || '10:00 AM'} – {restaurant.closingHours || '11:00 PM'}
+          </small>
+        </span>
+        <span>
+          <strong>Delivery</strong>
+          <small>Express doorstep delivery in ~28 mins</small>
+        </span>
+      </div>
 
-            <div className="flex-1 w-full flex flex-col justify-between self-stretch">
-              <div>
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
-                  <h1 className="text-3xl md:text-4xl font-black text-white font-['Space_Grotesk'] tracking-tight">
-                    {restaurant?.restaurantName}
-                  </h1>
-                  <div className="flex items-center gap-1.5 bg-black/60 text-amber-400 border border-amber-500/20 px-3.5 py-1 rounded-full font-black text-sm">
-                    <IoStar size={16} className="text-amber-400 fill-amber-400" />
-                    <span>{restaurant?.rating ? restaurant.rating.toFixed(1) : '4.5'}</span>
-                    <span className="text-gray-400 font-normal">
-                      ({restaurant?.numReviews || 48}+)
+      {/* Heading */}
+      <div className="section-heading-row compact-heading">
+        <div>
+          <p className="eyebrow">MADE FOR YOUR CRAVING</p>
+          <h2>Explore the menu.</h2>
+        </div>
+        <span className="preview-note">{menuItems.length} dishes available</span>
+      </div>
+
+      {/* Dish Grid */}
+      {menuItems.length > 0 ? (
+        <div className="dish-grid">
+          {menuItems.map((dish) => {
+            const quantity = getItemQuantity(dish._id);
+            const isUnavailable = dish.status === 'unavailable' || dish.status === 'discontinued';
+            const dishImage =
+              dish.image?.url || dish.itemImage?.url || '/assets/bitehero-food-pasta.png';
+
+            return (
+              <article
+                key={dish._id}
+                className="dish-card"
+                style={{ opacity: isUnavailable ? 0.7 : 1 }}
+              >
+                <img src={dishImage} alt={dish.itemName} loading="lazy" />
+                <div className="dish-card-copy">
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '8px',
+                    }}
+                  >
+                    <span className="dish-category">
+                      {dish.category || (dish.isVeg ? 'Vegetarian' : 'Chef Special')}
                     </span>
-                  </div>
-                </div>
-
-                <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-4">
-                  {restaurant?.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {restaurant?.cuisines
-                    ? restaurant.cuisines.split(',').map((c, i) => (
-                        <span
-                          key={i}
-                          className="bg-white/5 text-[#ff5400] border border-[#ff5400]/20 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider"
-                        >
-                          {c.trim()}
-                        </span>
-                      ))
-                    : null}
-                </div>
-              </div>
-
-              {/* Address and Delivery Time */}
-              <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-white/10 text-xs sm:text-sm text-gray-400">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <IoLocationOutline size={18} className="text-[#ff5400]" />
-                  {restaurant?.address || restaurant?.city || 'Downtown Outlet'}
-                </span>
-                <span className="flex items-center gap-1.5 font-medium">
-                  <IoTimeOutline size={18} className="text-[#ff5400]" />
-                  25-35 mins thermal delivery
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Menu Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5400]/10 border border-[#ff5400]/30 text-[#ff5400] text-xs font-black tracking-widest uppercase mb-2">
-              <IoSparklesOutline /> Master Kitchen Selection
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white font-['Space_Grotesk'] tracking-tight">
-              Curated Menu ({menuItems.length})
-            </h2>
-          </div>
-        </div>
-
-        {menuItems.length === 0 ? (
-          <div className="text-center py-20 bg-[#0e121d] rounded-3xl border border-white/10">
-            <p className="text-gray-400 font-medium">No dishes currently available in this menu.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {menuItems.map((item) => {
-              const qty = getCartQuantity(item._id);
-              const isVeg = item.type?.toLowerCase() === 'veg' || item.isVeg;
-              const itemImage =
-                item.image?.url ||
-                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&auto=format&fit=crop';
-
-              return (
-                <div
-                  key={item._id}
-                  className="bg-[#131826] rounded-3xl p-5 flex gap-4 border border-white/10 hover:border-[#ff5400]/40 transition-all duration-300 shadow-xl"
-                >
-                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shrink-0 bg-black">
-                    <img
-                      src={itemImage}
-                      alt={item.itemName}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 left-2">
+                    {isUnavailable && (
                       <span
-                        className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md shadow-sm ${
-                          isVeg ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
-                        }`}
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: '700',
+                          color: 'var(--red)',
+                          background: 'rgba(180, 58, 47, 0.12)',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(180, 58, 47, 0.25)',
+                          letterSpacing: '0.04em',
+                          textTransform: 'uppercase',
+                        }}
                       >
-                        {isVeg ? 'VEG' : 'NON-VEG'}
+                        Unavailable
                       </span>
-                    </div>
+                    )}
                   </div>
-
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3 className="font-black text-base sm:text-lg text-white font-['Space_Grotesk'] mb-1">
-                        {item.itemName}
-                      </h3>
-                      <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-white/5">
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-xs font-black text-[#ff5400]">₹</span>
-                        <span className="text-xl font-black text-white font-['Space_Grotesk']">
-                          {item.price}
-                        </span>
-                      </div>
-
-                      {qty === 0 ? (
+                  <h3>{dish.itemName}</h3>
+                  <p>{dish.description || 'Artisanal ingredients, freshly prepared to order.'}</p>
+                  <div className="dish-card-bottom">
+                    <strong>₹{dish.price}</strong>
+                    {isUnavailable ? (
+                      <span
+                        style={{
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          color: 'var(--muted)',
+                          background: 'var(--paper)',
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--line)',
+                        }}
+                      >
+                        Sold out
+                      </span>
+                    ) : quantity > 0 ? (
+                      <div className="quantity-control">
                         <button
-                          onClick={() => onAddItem(item)}
-                          className="bg-gradient-to-r from-[#ff5400] to-[#e11d48] text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg shadow-[#ff5400]/25 hover:shadow-[#ff5400]/40 hover:scale-105 active:scale-95 transition-all"
+                          type="button"
+                          onClick={() => handleRemoveFromCart(dish, false)}
+                          aria-label="Remove one"
                         >
-                          + Add
+                          −
                         </button>
-                      ) : (
-                        <div className="flex items-center bg-black/40 rounded-xl border border-white/10 overflow-hidden h-9">
-                          <button
-                            onClick={() =>
-                              handleRemoveFromCart({ ...item, restaurantId: restaurant._id }, false)
-                            }
-                            className="px-3 text-[#ff5400] hover:bg-white/10 transition font-black text-base flex items-center justify-center h-full"
-                          >
-                            −
-                          </button>
-                          <span className="px-2 font-black text-white min-w-6 text-center text-xs">
-                            {qty}
-                          </span>
-                          <button
-                            onClick={() => onAddItem(item)}
-                            className="px-3 text-[#ff5400] hover:bg-white/10 transition font-black text-base flex items-center justify-center h-full"
-                          >
-                            +
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                        <span>{quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleAddToCart({ ...dish, restaurantId: restaurant._id })}
+                          aria-label="Add one"
+                        >
+                          +
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="add-button"
+                        onClick={() => onAddItem(dish)}
+                        aria-label={`Add ${dish.itemName} to cart`}
+                      >
+                        +
+                      </button>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="empty-state">
+          <span className="empty-mark">▢</span>
+          <h3>No dishes currently listed</h3>
+          <p>This restaurant is currently preparing its seasonal menu.</p>
+        </div>
+      )}
+    </main>
   );
 };
 

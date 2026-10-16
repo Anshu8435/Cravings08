@@ -64,26 +64,59 @@ const EditOrViewItem = ({ selectedItem, modalMode, isOpen, onClose, onSave }) =>
       >
         {/* Modal Container */}
         <div
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
+          style={{
+            background: 'var(--cream)',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--radius-card)',
+            boxShadow: 'var(--shadow-float)',
+            width: '100%',
+            maxWidth: '680px',
+            maxHeight: '90vh',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-(--color-primary) to-orange-400 p-4 text-white flex justify-center items-center shadow-md z-10 relative">
-            <div className="text-center">
-              <h1 className="text-2xl font-extrabold tracking-tight">
+          <div
+            style={{
+              background: 'var(--paper)',
+              borderBottom: '1px solid var(--line)',
+              padding: '18px 24px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              position: 'relative',
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: '1.45rem',
+                  color: 'var(--ink)',
+                  margin: 0,
+                }}
+              >
                 {modalMode === 'edit' ? 'Edit Dish Details' : 'Dish Details'}
-              </h1>
-              <p className="text-orange-100 text-sm mt-0.5 opacity-90 font-medium">
+              </h2>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--muted)' }}>
                 {modalMode === 'edit'
-                  ? 'Update the details of your menu item.'
-                  : 'Review the details of this dish.'}
+                  ? 'Update the details and availability of this menu item.'
+                  : 'Review the culinary profile and ingredients.'}
               </p>
             </div>
             <button
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-transform hover:scale-110 hover:rotate-90 duration-300"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--muted)',
+              }}
               onClick={onClose}
             >
-              <IoMdCloseCircleOutline size={32} />
+              <IoMdCloseCircleOutline size={26} />
             </button>
           </div>
 
@@ -260,15 +293,36 @@ const EditOrViewItem = ({ selectedItem, modalMode, isOpen, onClose, onSave }) =>
 
           {/* Footer Action */}
           {!isView && (
-            <div className="bg-gray-50 dark:bg-gray-900/50 p-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 rounded-b-3xl">
+            <div
+              style={{
+                background: 'var(--paper)',
+                padding: '16px 24px',
+                borderTop: '1px solid var(--line)',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '12px',
+              }}
+            >
               <button
-                className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl font-bold shadow-sm hover:bg-gray-50 transition-colors"
+                type="button"
+                style={{
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--cream)',
+                  color: 'var(--ink)',
+                  fontWeight: '600',
+                  fontSize: '0.88rem',
+                  cursor: 'pointer',
+                }}
                 onClick={onClose}
               >
                 Cancel
               </button>
               <button
-                className="px-8 py-2.5 bg-gradient-to-r from-(--color-primary) to-orange-500 text-white rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all"
+                type="button"
+                className="button button-primary"
+                style={{ padding: '9px 24px', fontSize: '0.88rem' }}
                 onClick={handleSave}
               >
                 Save Changes

@@ -16,151 +16,313 @@ const MenuItemRow = ({
   setIsControlsModalOpen,
   setIsEditViewItemModalOpen,
 }) => {
+  const isAvailable = item.status === 'available';
+
+  const handleToggleAvailability = async () => {
+    const nextStatus = isAvailable ? 'unavailable' : 'available';
+    setIsProcessing(true);
+    try {
+      const response = await api.put(`/menu/update/${item._id}`, {
+        restaurantId,
+        status: nextStatus,
+      });
+      if (response.data.success) {
+        setMenuItems((prev) =>
+          prev.map((m) => (m._id === item._id ? { ...m, status: nextStatus } : m)),
+        );
+        showToast(
+          nextStatus === 'unavailable'
+            ? `Item marked as Unavailable (Sold out)`
+            : `Item marked as Available!`,
+          nextStatus === 'unavailable' ? 'error' : 'success',
+        );
+      }
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to update availability', 'error');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setIsProcessing(true);
+    try {
+      const response = await api.put(`/menu/update/${item._id}`, {
+        restaurantId,
+        status: newStatus,
+      });
+      if (response.data.success) {
+        setMenuItems((prev) =>
+          prev.map((m) => (m._id === item._id ? { ...m, status: newStatus } : m)),
+        );
+        showToast(`Status updated to ${newStatus}!`);
+      }
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to update status', 'error');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-7 gap-3 lg:gap-4 bg-(--color-base-100) p-4 mb-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-(--color-secondary) hover:-translate-y-0.5 items-start lg:items-center">
-      <div className="col-span-2 flex items-start sm:items-center gap-4 w-full">
+    <div className="menu-item-row">
+      {/* 1. Item Name, Image & Description */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0 }}>
         <img
-          src={item.image?.url || 'https://picsum.photos/seed/fallback/600/600'}
+          src={item.image?.url || '/assets/bitehero-food-pasta.png'}
           alt={item.itemName}
-          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded shadow-sm"
+          style={{
+            width: '64px',
+            height: '64px',
+            objectFit: 'cover',
+            borderRadius: '8px',
+            border: '1px solid var(--line)',
+            flexShrink: 0,
+          }}
         />
-        <div className="flex-1">
-          <div className="font-bold text-lg leading-tight mb-1">{item.itemName}</div>
-          <div className="text-xs sm:text-sm text-gray-500 leading-snug">{item.description}</div>
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '1rem',
+              fontWeight: '700',
+              color: 'var(--ink)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {item.itemName}
+          </div>
+          <div
+            style={{
+              fontSize: '0.8rem',
+              color: 'var(--muted)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              marginTop: '2px',
+            }}
+          >
+            {item.description || 'Artisanal dish'}
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-between w-full lg:w-auto lg:block lg:text-center mt-2 lg:mt-0">
-        <span className="lg:hidden font-semibold text-gray-600 text-sm">Price:</span>
-        <span className="font-bold text-gray-800">₹ {item.price.toFixed(2)}</span>
+      {/* 2. Price */}
+      <div style={{ textAlign: 'center' }}>
+        <strong
+          style={{
+            fontFamily: "'Fraunces', Georgia, serif",
+            fontSize: '1.05rem',
+            color: 'var(--ink)',
+          }}
+        >
+          ₹{Number(item.price).toFixed(2)}
+        </strong>
       </div>
 
-      <div className="flex justify-between w-full lg:w-auto lg:block border-t border-dashed border-gray-200 lg:border-0 pt-2 lg:pt-0">
-        <span className="lg:hidden font-semibold text-gray-600 text-sm">Category:</span>
-        <div className="text-right lg:text-left">
-          <div className="font-semibold text-gray-800">{item.category}</div>
-          <div className="text-xs text-gray-500">{item.type}</div>
+      {/* 3. Category & Type */}
+      <div>
+        <div style={{ fontWeight: '600', fontSize: '0.86rem', color: 'var(--ink)' }}>
+          {item.category}
         </div>
+        <div style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{item.type}</div>
       </div>
-      <div className="flex justify-between items-center w-full lg:w-auto lg:block border-t border-dashed border-gray-200 lg:border-0 pt-2 lg:pt-0">
-        <span className="lg:hidden font-semibold text-gray-600 text-sm">Status:</span>
-        <div className="relative inline-flex items-center">
+
+      {/* 4. Status & Unavailable Toggle Button */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {/* Direct One-Click Availability Button */}
+        <button
+          type="button"
+          onClick={handleToggleAvailability}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            padding: '5px 10px',
+            borderRadius: '999px',
+            fontSize: '0.76rem',
+            fontWeight: '700',
+            letterSpacing: '0.02em',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            border: isAvailable
+              ? '1px solid rgba(82, 108, 68, 0.4)'
+              : '1px solid rgba(180, 58, 47, 0.4)',
+            background: isAvailable ? 'rgba(82, 108, 68, 0.12)' : 'rgba(180, 58, 47, 0.12)',
+            color: isAvailable ? 'var(--green)' : 'var(--red)',
+          }}
+          title={isAvailable ? 'Click to mark as Unavailable' : 'Click to mark as Available'}
+        >
+          <span style={{ fontSize: '0.7rem' }}>{isAvailable ? '●' : '✕'}</span>
+          <span>{isAvailable ? 'Available' : 'Unavailable'}</span>
+        </button>
+
+        {/* Status Dropdown */}
+        <div style={{ position: 'relative', display: 'inline-block' }}>
           <select
             value={item.status}
-            className={`appearance-none rounded-md pl-3 pr-8 py-1.5 text-xs font-semibold tracking-wide transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-              statusChipStyles[item.status]
-            }`}
-            onChange={async (e) => {
-              const newStatus = e.target.value;
-              setIsProcessing(true);
-              try {
-                const response = await api.put(`/menu/update/${item._id}`, {
-                  restaurantId,
-                  status: newStatus,
-                });
-                if (response.data.success) {
-                  setMenuItems((prev) =>
-                    prev.map((m) => (m._id === item._id ? { ...m, status: newStatus } : m)),
-                  );
-                  showToast(`Status updated to ${newStatus}!`);
-                }
-              } catch (error) {
-                showToast(error.response?.data?.message || 'Failed to update status', 'error');
-              }
-              setIsProcessing(false);
+            onChange={handleStatusChange}
+            style={{
+              width: '100%',
+              padding: '4px 20px 4px 8px',
+              borderRadius: '6px',
+              fontSize: '0.72rem',
+              fontWeight: '600',
+              border: '1px solid var(--line)',
+              background: 'var(--paper)',
+              color: 'var(--ink)',
+              cursor: 'pointer',
+              appearance: 'none',
             }}
           >
-            <option value="available">{statusLabels.available}</option>
-            <option value="unavailable">{statusLabels.unavailable}</option>
-            <option value="discontinued">{statusLabels.discontinued}</option>
+            <option value="available">Available</option>
+            <option value="unavailable">Unavailable</option>
+            <option value="discontinued">Discontinued</option>
           </select>
-          <LuChevronDown className="pointer-events-none absolute right-2 text-xs opacity-70" />
+          <LuChevronDown
+            style={{
+              position: 'absolute',
+              right: '6px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              pointerEvents: 'none',
+              fontSize: '0.7rem',
+              color: 'var(--muted)',
+            }}
+          />
         </div>
       </div>
 
-      <div className="flex justify-between items-center w-full lg:w-auto lg:block border-t border-dashed border-gray-200 lg:border-0 pt-2 lg:pt-0">
-        <span className="lg:hidden font-semibold text-gray-600 text-sm">Controls:</span>
-        <div className="flex gap-2">
-          <button
-            className={`rounded flex items-center justify-center p-1 hover:bg-gray-100 transition-colors ${
-              item.isTopRated ? ' text-(--color-primary)' : 'text-(--color-secondary)'
-            }`}
-            title={item.isTopRated ? 'Top Rated' : 'Mark as Top Rated'}
-            onClick={() => {
-              setSelectedItem(item);
-              setModalMode('topRated');
-              setIsControlsModalOpen(true);
-            }}
-          >
-            <FaAward size={18} />
-          </button>
-          <button
-            className={`rounded flex items-center justify-center p-1 hover:bg-gray-100 transition-colors ${
-              item.isRecommended ? 'text-(--color-primary)' : 'text-(--color-secondary)'
-            }`}
-            onClick={() => {
-              setSelectedItem(item);
-              setModalMode('recommended');
-              setIsControlsModalOpen(true);
-            }}
-            title={item.isRecommended ? 'Recommended' : 'Mark as Recommended'}
-          >
-            <AiTwotoneLike size={18} />
-          </button>
-          <button
-            className={`px-2 py-0.5 rounded flex items-center justify-center text-xs font-semibold transition-colors ${
-              item.isNew
-                ? 'text-white bg-(--color-primary) border border-(--color-primary)'
-                : 'text-(--color-secondary) border border-(--color-secondary) hover:bg-gray-100'
-            }`}
-            onClick={() => {
-              setSelectedItem(item);
-              setModalMode('new');
-              setIsControlsModalOpen(true);
-            }}
-            title={item.isNew ? 'New Item' : 'Mark as New'}
-          >
-            New
-          </button>
-        </div>
+      {/* 5. Controls: Top Rated, Recommended, New */}
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedItem(item);
+            setModalMode('topRated');
+            setIsControlsModalOpen(true);
+          }}
+          style={{
+            padding: '6px',
+            borderRadius: '6px',
+            border: '1px solid var(--line)',
+            background: item.isTopRated ? 'var(--gold)' : 'var(--paper)',
+            color: item.isTopRated ? '#28261f' : 'var(--muted)',
+            cursor: 'pointer',
+          }}
+          title={item.isTopRated ? 'Top Rated' : 'Mark as Top Rated'}
+        >
+          <FaAward size={16} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedItem(item);
+            setModalMode('recommended');
+            setIsControlsModalOpen(true);
+          }}
+          style={{
+            padding: '6px',
+            borderRadius: '6px',
+            border: '1px solid var(--line)',
+            background: item.isRecommended ? 'var(--red)' : 'var(--paper)',
+            color: item.isRecommended ? '#fff' : 'var(--muted)',
+            cursor: 'pointer',
+          }}
+          title={item.isRecommended ? 'Recommended' : 'Mark as Recommended'}
+        >
+          <AiTwotoneLike size={16} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedItem(item);
+            setModalMode('new');
+            setIsControlsModalOpen(true);
+          }}
+          style={{
+            padding: '4px 8px',
+            borderRadius: '6px',
+            border: '1px solid var(--line)',
+            background: item.isNew ? 'var(--red)' : 'var(--paper)',
+            color: item.isNew ? '#fff' : 'var(--muted)',
+            fontSize: '0.72rem',
+            fontWeight: '700',
+            cursor: 'pointer',
+          }}
+          title={item.isNew ? 'New Item' : 'Mark as New'}
+        >
+          New
+        </button>
       </div>
-      <div className="flex justify-between items-center w-full lg:w-auto lg:block border-t border-dashed border-gray-200 lg:border-0 pt-2 lg:pt-0 pb-1 lg:pb-0">
-        <span className="lg:hidden font-semibold text-gray-600 text-sm">Actions:</span>
-        <div className="flex gap-2">
-          <button
-            className="px-2 py-1.5 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded transition-colors"
-            title="Edit Item"
-            onClick={() => {
-              setSelectedItem(item);
-              setModalMode('edit');
-              setIsEditViewItemModalOpen(true);
-            }}
-          >
-            <LuPencilLine size={16} />
-          </button>
-          <button
-            className="px-2 py-1.5 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded transition-colors"
-            title="View Item Details"
-            onClick={() => {
-              setSelectedItem(item);
-              setModalMode('view');
-              setIsEditViewItemModalOpen(true);
-            }}
-          >
-            <LuEye size={16} />
-          </button>
-          <button
-            className="px-2 py-1.5 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded transition-colors"
-            title="Delete Item"
-            onClick={() => {
-              setSelectedItem(item);
-              setModalMode('delete');
-              setIsControlsModalOpen(true);
-            }}
-          >
-            <LuTrash2 size={16} />
-          </button>
-        </div>
+
+      {/* 6. Actions: Edit, View, Delete */}
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedItem(item);
+            setModalMode('edit');
+            setIsEditViewItemModalOpen(true);
+          }}
+          style={{
+            padding: '6px 8px',
+            borderRadius: '6px',
+            border: '1px solid var(--line)',
+            background: 'var(--paper)',
+            color: 'var(--ink)',
+            cursor: 'pointer',
+          }}
+          title="Edit Item"
+        >
+          <LuPencilLine size={15} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedItem(item);
+            setModalMode('view');
+            setIsEditViewItemModalOpen(true);
+          }}
+          style={{
+            padding: '6px 8px',
+            borderRadius: '6px',
+            border: '1px solid var(--line)',
+            background: 'var(--paper)',
+            color: 'var(--ink)',
+            cursor: 'pointer',
+          }}
+          title="View Details"
+        >
+          <LuEye size={15} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedItem(item);
+            setModalMode('delete');
+            setIsControlsModalOpen(true);
+          }}
+          style={{
+            padding: '6px 8px',
+            borderRadius: '6px',
+            border: '1px solid rgba(180, 58, 47, 0.3)',
+            background: 'rgba(180, 58, 47, 0.08)',
+            color: 'var(--red)',
+            cursor: 'pointer',
+          }}
+          title="Delete Item"
+        >
+          <LuTrash2 size={15} />
+        </button>
       </div>
     </div>
   );

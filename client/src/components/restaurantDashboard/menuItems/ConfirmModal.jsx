@@ -12,56 +12,36 @@ const ConfirmModal = ({ selectedItem, modalMode, isOpen, onClose, onConfirm }) =
       case 'delete':
         return {
           title: 'Delete Menu Item',
-          desc: 'Are you sure you want to delete this item? This action cannot be undone.',
-          icon: <FaTrashAlt size={28} className="text-red-500" />,
-          bgClass: 'bg-red-50',
-          iconBg: 'bg-red-100',
-          btnClass:
-            'bg-gradient-to-r from-red-500 to-rose-600 hover:shadow-red-500/30 text-white shadow-lg',
-          btnText: 'Yes, Delete It',
+          desc: 'Are you sure you want to delete this dish? This action will permanently remove it from your menu.',
+          icon: <FaTrashAlt size={26} style={{ color: 'var(--red)' }} />,
+          btnText: 'Yes, Delete Item',
         };
       case 'topRated':
         return {
-          title: 'Update Top Rated Status',
-          desc: 'Are you sure you want to change the Top Rated status of this item?',
-          icon: <FaInfoCircle size={32} className="text-(--color-primary)" />,
-          bgClass: 'bg-orange-50',
-          iconBg: 'bg-orange-100',
-          btnClass:
-            'bg-gradient-to-r from-(--color-primary) to-orange-500 hover:shadow-orange-500/30 text-white shadow-lg',
+          title: 'Update Top Rated Flag',
+          desc: 'Toggle the Top Rated badge for this dish on the public menu.',
+          icon: <FaInfoCircle size={28} style={{ color: 'var(--gold)' }} />,
           btnText: 'Confirm Update',
         };
       case 'recommended':
         return {
-          title: 'Update Recommended Status',
-          desc: 'Are you sure you want to change the Recommended status of this item?',
-          icon: <FaInfoCircle size={32} className="text-(--color-primary)" />,
-          bgClass: 'bg-orange-50',
-          iconBg: 'bg-orange-100',
-          btnClass:
-            'bg-gradient-to-r from-(--color-primary) to-orange-500 hover:shadow-orange-500/30 text-white shadow-lg',
+          title: 'Update Recommended Flag',
+          desc: 'Toggle the Chef’s Recommended badge for this dish.',
+          icon: <FaInfoCircle size={28} style={{ color: 'var(--red)' }} />,
           btnText: 'Confirm Update',
         };
       case 'new':
         return {
-          title: 'Update New Status',
-          desc: 'Are you sure you want to change the New status of this item?',
-          icon: <FaInfoCircle size={32} className="text-(--color-primary)" />,
-          bgClass: 'bg-orange-50',
-          iconBg: 'bg-orange-100',
-          btnClass:
-            'bg-gradient-to-r from-(--color-primary) to-orange-500 hover:shadow-orange-500/30 text-white shadow-lg',
+          title: 'Update New Dish Flag',
+          desc: 'Toggle the New Arrival badge for this dish.',
+          icon: <FaInfoCircle size={28} style={{ color: 'var(--ink)' }} />,
           btnText: 'Confirm Update',
         };
       default:
         return {
-          title: 'Are you sure?',
-          desc: 'Do you want to proceed with this action?',
-          icon: <FaExclamationTriangle size={32} className="text-yellow-500" />,
-          bgClass: 'bg-yellow-50',
-          iconBg: 'bg-yellow-100',
-          btnClass:
-            'bg-gradient-to-r from-yellow-500 to-amber-500 hover:shadow-yellow-500/30 text-white shadow-lg',
+          title: 'Confirm Action',
+          desc: 'Do you want to proceed with this update?',
+          icon: <FaExclamationTriangle size={28} style={{ color: 'var(--gold)' }} />,
           btnText: 'Confirm',
         };
     }
@@ -70,63 +50,131 @@ const ConfirmModal = ({ selectedItem, modalMode, isOpen, onClose, onConfirm }) =
   const config = getModalConfig();
 
   return (
-    <>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(40, 38, 31, 0.5)',
+        backdropFilter: 'blur(3px)',
+        padding: '16px',
+      }}
+      onClick={onClose}
+    >
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-        onClick={onClose}
+        style={{
+          background: 'var(--cream)',
+          border: '1px solid var(--line)',
+          borderRadius: 'var(--radius-card)',
+          boxShadow: 'var(--shadow-float)',
+          width: '100%',
+          maxWidth: '440px',
+          overflow: 'hidden',
+        }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header Region */}
-          <div className="relative pt-8 px-6 flex flex-col items-center text-center">
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-transform hover:scale-110 hover:rotate-90 duration-300"
-              onClick={onClose}
+        <div style={{ padding: '24px 24px 16px', textAlign: 'center', position: 'relative' }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--muted)',
+            }}
+          >
+            <IoMdCloseCircleOutline size={24} />
+          </button>
+
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'var(--paper)',
+              border: '1px solid var(--line)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 14px',
+            }}
+          >
+            {config.icon}
+          </div>
+
+          <h3
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '1.35rem',
+              color: 'var(--ink)',
+              margin: '0 0 6px',
+            }}
+          >
+            {config.title}
+          </h3>
+
+          {selectedItem && (
+            <p
+              style={{
+                fontWeight: '700',
+                fontSize: '0.88rem',
+                color: 'var(--red)',
+                margin: '0 0 6px',
+              }}
             >
-              <IoMdCloseCircleOutline size={28} />
-            </button>
-
-            <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${config.iconBg} shadow-inner`}
-            >
-              {config.icon}
-            </div>
-
-            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
-              {config.title}
-            </h1>
-
-            {selectedItem && (
-              <p className="text-sm font-bold text-(--color-primary) mb-2">
-                Target: {selectedItem.itemName}
-              </p>
-            )}
-
-            <p className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-6 px-4">
-              {config.desc}
+              Target: {selectedItem.itemName}
             </p>
-          </div>
+          )}
 
-          {/* Action Buttons */}
-          <div className="bg-gray-50 dark:bg-gray-900/50 p-6 border-t border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row justify-center gap-3 w-full">
-            <button
-              className="px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-bold shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full sm:w-1/2"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className={`px-6 py-3 rounded-xl font-bold hover:-translate-y-0.5 transition-all w-full sm:w-1/2 ${config.btnClass}`}
-              onClick={onConfirm}
-            >
-              {config.btnText}
-            </button>
-          </div>
+          <p style={{ fontSize: '0.84rem', color: 'var(--muted)', margin: 0, lineHeight: 1.5 }}>
+            {config.desc}
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            gap: '10px',
+            padding: '16px 24px 24px',
+            borderTop: '1px solid var(--line)',
+            background: 'var(--paper)',
+          }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              flex: 1,
+              padding: '10px 16px',
+              borderRadius: '8px',
+              border: '1px solid var(--line)',
+              background: 'var(--cream)',
+              color: 'var(--ink)',
+              fontWeight: '600',
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="button button-primary"
+            onClick={onConfirm}
+            style={{ flex: 1, padding: '10px 16px', fontSize: '0.88rem' }}
+          >
+            {config.btnText}
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

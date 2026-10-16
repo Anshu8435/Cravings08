@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FaAward, FaRegGrinStars } from 'react-icons/fa';
-import { BiSolidDish } from 'react-icons/bi';
-import { LuPencilLine, LuTrash2, LuEye, LuChevronDown } from 'react-icons/lu';
-import { AiTwotoneLike } from 'react-icons/ai';
-import { IoMdAddCircleOutline, IoMdCloseCircleOutline } from 'react-icons/io';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 import ConfirmModal from './menuItems/ConfirmModal';
 import AddNewItemModal from './menuItems/AddNewItemModal';
 import EditOrViewItem from './menuItems/EditOrViewItem';
 import MenuItemRow from './menuItems/MenuItemRow';
-import { statusChipStyles, statusLabels } from './menuItems/menuData';
 import api from '../../config/ApiConfig.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import runningLoader from '../../assets/runningLoader.gif';
@@ -49,7 +44,7 @@ const RestaurantMenu = ({ activeRestaurantId }) => {
           setMenuItems(response.data.data || []);
         }
       } catch (error) {
-        showToast(error.response?.data?.message || 'Failed to load menu', 'error');
+        showToast(error.response?.data?.message || 'Failed to load menu items', 'error');
       } finally {
         setIsLoading(false);
       }
@@ -59,9 +54,9 @@ const RestaurantMenu = ({ activeRestaurantId }) => {
 
   const filteredMenuItems = menuItems.filter(
     (item) =>
-      item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase()),
+      item.itemName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.category?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleConfirmAction = async () => {
@@ -168,84 +163,115 @@ const RestaurantMenu = ({ activeRestaurantId }) => {
   };
 
   return (
-    <>
-      <div className="overflow-y-auto h-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-1 mb-6 gap-4 sm:gap-0">
-          <h2 className="text-2xl font-bold">Menu Management</h2>
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-stretch sm:items-center">
-            <button
-              className="hover:bg-(--color-primary) border border-(--color-primary) text-(--color-primary) hover:text-white px-4 py-2 rounded transition-colors flex items-center gap-2"
-              onClick={() => {
-                if (!user) {
-                  showToast('first login', 'error');
-                  return;
-                }
-                if (user.userType !== 'restaurant') {
-                  showToast('only restaurant can add menu items', 'error');
-                  return;
-                }
-                setIsAddNewItemModalOpen(true);
-              }}
-            >
-              <IoMdAddCircleOutline />
-              Add New Item
-            </button>
-            <input
-              type="text"
-              name="search"
-              id="search"
-              placeholder="Search menu..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border border-(--color-primary) rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition-colors w-full sm:w-auto"
-            />
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Top Toolbar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
+          background: 'var(--cream)',
+          border: '1px solid var(--line)',
+          borderRadius: 'var(--radius-card)',
+          padding: '16px 20px',
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '1.4rem',
+              margin: 0,
+              color: 'var(--ink)',
+            }}
+          >
+            Menu Management
+          </h2>
+          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--muted)' }}>
+            Manage dishes, toggle availability status, and control featured flags.
+          </p>
         </div>
-        <div className="bg-(--color-base-200) p-2 sm:p-4 rounded-lg">
-          <div className="hidden lg:grid text-(--color-primary) grid-cols-7 gap-4 font-bold border-b border-(--color-secondary) py-2 px-2">
-            <div className="col-span-2">Item Name & Description</div>
-            <div className="text-center">Price</div>
-            <div>Category & Type</div>
-            <div>Status</div>
-            <div>Controls</div>
-            <div>Actions</div>
-          </div>
-          <div className="overflow-y-auto max-h-[65vh] pr-1 sm:pr-2 mt-2">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <img
-                  src={runningLoader}
-                  alt="Loading..."
-                  className="w-16 h-16 object-contain mb-4"
-                />
-                <p className="text-gray-500 font-semibold text-lg animate-pulse">
-                  Loading menu items...
-                </p>
-              </div>
-            ) : filteredMenuItems.length > 0 ? (
-              filteredMenuItems.map((item, index) => (
-                <MenuItemRow
-                  key={item._id || index}
-                  item={item}
-                  restaurantId={restaurantId}
-                  setMenuItems={setMenuItems}
-                  setIsProcessing={setIsProcessing}
-                  showToast={showToast}
-                  setSelectedItem={setSelectedItem}
-                  setModalMode={setModalMode}
-                  setIsControlsModalOpen={setIsControlsModalOpen}
-                  setIsEditViewItemModalOpen={setIsEditViewItemModalOpen}
-                />
-              ))
-            ) : (
-              <div className="text-center py-20 text-gray-500 font-semibold text-lg">
-                No menu items found.
-              </div>
-            )}
-          </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input
+            type="text"
+            placeholder="Search dishes or categories…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              padding: '8px 14px',
+              border: '1px solid var(--line)',
+              borderRadius: '8px',
+              background: 'var(--paper)',
+              fontSize: '0.85rem',
+              color: 'var(--ink)',
+              minWidth: '220px',
+            }}
+          />
+
+          <button
+            type="button"
+            className="button button-primary"
+            onClick={() => setIsAddNewItemModalOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.85rem',
+              padding: '9px 16px',
+            }}
+          >
+            <IoMdAddCircleOutline size={18} />
+            <span>Add New Item</span>
+          </button>
         </div>
       </div>
 
+      {/* Grid Headers */}
+      <div className="menu-grid-header">
+        <div>Dish details</div>
+        <div style={{ textAlign: 'center' }}>Price</div>
+        <div>Category</div>
+        <div>Availability status</div>
+        <div>Flags</div>
+        <div>Actions</div>
+      </div>
+
+      {/* Menu Item Rows */}
+      {isLoading ? (
+        <div className="empty-state" style={{ padding: '60px 20px' }}>
+          <span className="empty-mark">⏳</span>
+          <h3>Loading kitchen menu…</h3>
+          <p>Fetching dishes from database.</p>
+        </div>
+      ) : filteredMenuItems.length > 0 ? (
+        <div>
+          {filteredMenuItems.map((item, index) => (
+            <MenuItemRow
+              key={item._id || index}
+              item={item}
+              restaurantId={restaurantId}
+              setMenuItems={setMenuItems}
+              setIsProcessing={setIsProcessing}
+              showToast={showToast}
+              setSelectedItem={setSelectedItem}
+              setModalMode={setModalMode}
+              setIsControlsModalOpen={setIsControlsModalOpen}
+              setIsEditViewItemModalOpen={setIsEditViewItemModalOpen}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="empty-state">
+          <span className="empty-mark">🍽️</span>
+          <h3>No dishes found</h3>
+          <p>Click "Add New Item" above to add your first menu item.</p>
+        </div>
+      )}
+
+      {/* Modals */}
       {isControlsModalOpen && (
         <ConfirmModal
           selectedItem={selectedItem}
@@ -274,23 +300,53 @@ const RestaurantMenu = ({ activeRestaurantId }) => {
         />
       )}
 
+      {/* Processing Overlay */}
       {isProcessing && (
-        <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity">
-          <img src={runningLoader} alt="Processing..." className="w-16 h-16 object-contain mb-4" />
-          <p className="text-white font-semibold text-lg drop-shadow-md animate-pulse">
-            Processing...
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(40, 38, 31, 0.45)',
+            backdropFilter: 'blur(3px)',
+          }}
+        >
+          <img
+            src={runningLoader}
+            alt="Processing..."
+            style={{ width: '64px', height: '64px', marginBottom: '12px' }}
+          />
+          <p style={{ color: '#fff', fontWeight: '700', fontSize: '1rem' }}>
+            Updating kitchen records…
           </p>
         </div>
       )}
 
+      {/* Toast Notification */}
       {toast.show && (
         <div
-          className={`fixed top-8 left-1/2 -translate-x-1/2 z-200 px-6 py-3 rounded-lg shadow-xl text-white font-semibold transition-all duration-300 animate-bounce ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 10000,
+            padding: '12px 20px',
+            borderRadius: '8px',
+            boxShadow: 'var(--shadow-float)',
+            color: '#fff',
+            fontWeight: '600',
+            fontSize: '0.88rem',
+            background: toast.type === 'error' ? 'var(--red)' : 'var(--green)',
+          }}
         >
           {toast.message}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
