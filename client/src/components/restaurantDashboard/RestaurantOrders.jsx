@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../config/ApiConfig';
-import NoDataFound from '../NoDataFound';
 
 const RestaurantOrders = ({ activeRestaurantId }) => {
   const [orders, setOrders] = useState([]);
@@ -32,101 +31,80 @@ const RestaurantOrders = ({ activeRestaurantId }) => {
   }, [activeRestaurantId]);
 
   return (
-    <div className="overflow-y-auto h-full p-2 sm:p-4">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-900 dark:text-gray-100">
-        Orders Management
-      </h2>
-      <div className="bg-(--color-base-200) p-4 rounded-xl shadow-sm border border-(--color-base-300)">
-        {orders.length === 0 && !isLoading ? (
-          <NoDataFound text="No orders received for this restaurant yet." height="200px" />
-        ) : (
-          <>
-            <div className="hidden md:block">
-              <table className="w-full text-sm sm:text-base">
-                <thead>
-                  <tr className="border-b border-(--color-secondary)">
-                    <th className="text-left py-2 px-2">Order ID</th>
-                    <th className="text-left py-2 px-2">Customer</th>
-                    <th className="text-left py-2 px-2">Amount</th>
-                    <th className="text-left py-2 px-2">Status</th>
-                    <th className="text-left py-2 px-2">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order, index) => (
-                    <tr
-                      key={index}
-                      className="border-b border-(--color-secondary) hover:bg-(--color-base-100) transition-colors"
-                    >
-                      <td className="py-3 px-2 font-semibold text-gray-800 dark:text-gray-200">
-                        {order.id}
-                      </td>
-                      <td className="py-3 px-2">{order.customer}</td>
-                      <td className="py-3 px-2 font-bold">{order.amount}</td>
-                      <td className="py-3 px-2">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-bold border ${
-                            order.status === 'Delivered'
-                              ? 'bg-green-100 text-green-800 border-green-200'
-                              : order.status === 'Preparing'
-                                ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
-                                : 'bg-red-100 text-red-800 border-red-200'
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-2">{order.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="md:hidden flex flex-col gap-4">
-              {orders.map((order, index) => (
-                <div
-                  key={index}
-                  className="bg-white dark:bg-black/40 p-4 rounded-xl shadow-md border border-gray-100 dark:border-gray-800 flex flex-col gap-3"
-                >
-                  <div className="flex justify-between items-start border-b border-gray-100 dark:border-gray-800 pb-3">
-                    <div>
-                      <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">
-                        {order.id}
-                      </h3>
-                      <p className="text-xs text-gray-500 font-medium">{order.date}</p>
-                    </div>
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border uppercase tracking-wide ${
-                        order.status === 'Delivered'
-                          ? 'bg-green-100 text-green-800 border-green-200'
-                          : order.status === 'Preparing'
-                            ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
-                            : 'bg-red-100 text-red-800 border-red-200'
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">Customer:</span>
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">
-                      {order.customer}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm border-t border-gray-100 dark:border-gray-800 pt-2">
-                    <span className="text-gray-600 dark:text-gray-400">Total Amount:</span>
-                    <span className="font-extrabold text-base text-gray-900 dark:text-gray-100">
-                      {order.amount}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+    <section className="dashboard-panel">
+      <div className="panel-heading">
+        <div>
+          <h2>Kitchen orders</h2>
+          <p>Orders received and fulfillment status for this kitchen.</p>
+        </div>
+        <span className="preview-note">{orders.length} Total orders</span>
       </div>
-    </div>
+
+      {isLoading ? (
+        <div className="empty-state" style={{ padding: '40px 10px' }}>
+          <span className="empty-mark">⏳</span>
+          <h3>Loading orders…</h3>
+        </div>
+      ) : orders.length > 0 ? (
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order, index) => {
+                const status = (order.status || 'pending').toLowerCase();
+                return (
+                  <tr key={index}>
+                    <td>
+                      <strong>{order.id}</strong>
+                    </td>
+                    <td>{order.customer}</td>
+                    <td>
+                      <strong>{order.amount}</strong>
+                    </td>
+                    <td>
+                      <span
+                        className="status-pill"
+                        style={{
+                          background:
+                            status === 'delivered'
+                              ? 'rgba(82, 108, 68, 0.12)'
+                              : status === 'preparing'
+                                ? 'rgba(241, 190, 88, 0.2)'
+                                : 'rgba(180, 58, 47, 0.12)',
+                          color:
+                            status === 'delivered'
+                              ? 'var(--green)'
+                              : status === 'preparing'
+                                ? '#8e5e00'
+                                : 'var(--red)',
+                        }}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.82rem', color: 'var(--muted)' }}>{order.date}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="empty-state">
+          <span className="empty-mark">📋</span>
+          <h3>No orders received yet</h3>
+          <p>Incoming orders will appear here as soon as customers order from this kitchen.</p>
+        </div>
+      )}
+    </section>
   );
 };
 
