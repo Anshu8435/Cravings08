@@ -70,47 +70,91 @@ const RiderSetting = () => {
 
   return (
     <>
-      <div className="w-full max-w-5xl mx-auto py-4 px-4 sm:px-8">
-        <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 relative">
+      <div className="w-full max-w-5xl mx-auto py-2">
+        <div
+          style={{
+            background: 'var(--cream)',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--radius-card)',
+            boxShadow: 'var(--shadow-card)',
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
           {/* Banner Image */}
-          <div className="h-32 sm:h-48 w-full bg-linear-to-r from-orange-400 via-rose-500 to-purple-600 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
-
+          <div
+            style={{
+              height: '140px',
+              width: '100%',
+              background: 'linear-gradient(135deg, var(--red) 0%, #332e27 100%)',
+              position: 'relative',
+            }}
+          >
             {/* Top Right Actions */}
-            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex flex-col sm:flex-row gap-2">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex gap-2">
               {!editingProfile ? (
                 <>
                   <button
+                    type="button"
                     onClick={() => setEditingProfile(true)}
-                    className="flex items-center gap-1.5 sm:gap-2 bg-white/90 hover:bg-white text-gray-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg transition-all"
+                    className="button button-small button-secondary"
+                    style={{
+                      background: '#ffffff',
+                      color: '#28261f',
+                      border: '1px solid rgba(40, 38, 31, 0.25)',
+                      fontWeight: '700',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.18)',
+                      cursor: 'pointer',
+                    }}
                   >
-                    <MdEdit className="text-base sm:text-lg text-(--color-primary)" /> Edit
+                    <MdEdit size={16} style={{ color: 'var(--red)' }} /> Edit Profile
                   </button>
                   <button
+                    type="button"
                     onClick={() => setIsPasswordChangeModalOpen(true)}
-                    className="flex items-center gap-1.5 sm:gap-2 bg-white/90 hover:bg-white text-gray-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg transition-all"
+                    className="button button-small button-secondary"
+                    style={{
+                      background: '#ffffff',
+                      color: '#28261f',
+                      border: '1px solid rgba(40, 38, 31, 0.25)',
+                      fontWeight: '700',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.18)',
+                      cursor: 'pointer',
+                    }}
                   >
-                    <MdOutlineLockReset className="text-base sm:text-lg text-(--color-primary)" />{' '}
-                    <span className="hidden sm:inline">Change Password</span>
-                    <span className="sm:hidden">Password</span>
+                    <MdOutlineLockReset size={16} style={{ color: 'var(--red)' }} /> Change Password
                   </button>
                 </>
               ) : (
                 <>
                   <button
+                    type="button"
                     onClick={handleCancelProfile}
-                    className="flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto"
+                    className="button button-small button-secondary"
+                    style={{
+                      background: '#ffffff',
+                      color: '#28261f',
+                      border: '1px solid rgba(40, 38, 31, 0.25)',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                    }}
                     disabled={isLoading}
                   >
                     Cancel
                   </button>
                   <button
+                    type="button"
                     onClick={handleSaveProfile}
-                    className="flex items-center justify-center gap-2 bg-white text-(--color-primary) px-4 sm:px-6 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-70 w-full sm:w-auto"
+                    className="button button-small button-primary"
+                    style={{
+                      background: 'var(--red)',
+                      color: '#ffffff',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                    }}
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Saving...' : 'Save'}
+                    {isLoading ? 'Saving...' : 'Save Changes'}
                   </button>
                 </>
               )}
