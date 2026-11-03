@@ -150,6 +150,28 @@ const Navbar = () => {
 
       const paymentOrderRes = await api.post('/payment/create-order', { orderId: appOrderId });
       const paymentData = paymentOrderRes?.data?.data;
+      const isMock = paymentOrderRes?.data?.isMock;
+
+      if (isMock) {
+        await api.post('/payment/verify', {
+          orderId: appOrderId,
+          razorpay_order_id: paymentData.razorpayOrderId,
+          razorpay_payment_id: `pay_mock_${Date.now()}`,
+          razorpay_signature: 'mock_signature',
+        });
+
+        toast.success('Payment successful!');
+        setIsCartOpen(false);
+        setReceiptData({
+          razorpay_order_id: paymentData.razorpayOrderId,
+          razorpay_payment_id: `PAY-MOCK-${(appOrderId || '').slice(-6).toUpperCase()}`,
+          amount: totalAmount,
+          items: cart,
+        });
+        clearCart();
+        navigate('/customer-dashboard');
+        return;
+      }
 
       const loaded = await loadRazorpayScript();
       if (!loaded) {

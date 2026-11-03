@@ -68,13 +68,22 @@ const Register = () => {
         ...formData,
         email: formData.email.toLowerCase(),
       });
-      toast.success(res.data.message);
+      toast.success(res.data.message || 'Account created successfully!');
       navigate('/login');
     } catch (error) {
-      toast.error(
+      const message =
         error.response?.data?.message ||
-          'Unknown error occurred during registration. Please try again.',
-      );
+        error.response?.data?.error?.message ||
+        (error.response?.status === 409
+          ? 'This email is already registered. Please log in instead.'
+          : 'Registration failed. Please try again.');
+      toast.error(message);
+      if (error.response?.status === 409) {
+        setErrors((prev) => ({
+          ...prev,
+          email: 'Email already registered. Please log in.',
+        }));
+      }
     } finally {
       setLoading(false);
     }

@@ -20,8 +20,19 @@ const TestPaymentButton = ({ amount = 100 }) => {
 
       // 2. Call backend to create order
       const orderResponse = await api.post('/payment/create-order', { amount });
+      const { data, isMock } = orderResponse.data;
 
-      const { data } = orderResponse.data;
+      if (isMock) {
+        const verifyRes = await api.post('/payment/verify', {
+          razorpay_order_id: data.orderId,
+          razorpay_payment_id: `pay_mock_${Date.now()}`,
+          razorpay_signature: 'mock_signature',
+        });
+        if (verifyRes.data.success) {
+          toast.success('Test mock payment successful and verified!');
+        }
+        return;
+      }
 
       // 3. Configure Checkout options
       const options = {

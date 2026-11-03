@@ -4,7 +4,9 @@ import toast from 'react-hot-toast';
 const rawBaseURL =
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
-  'http://localhost:4500';
+  (import.meta.env.PROD
+    ? 'https://cravings08.onrender.com'
+    : 'http://localhost:4500');
 
 const baseURL = (rawBaseURL || '').replace(/\/+$/, '');
 
@@ -24,6 +26,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.data) {
+      if (!error.response.data.message && error.response.data.error?.message) {
+        error.response.data.message = error.response.data.error.message;
+      }
+    }
     if (error.response && error.response.status === 401) {
       sessionStorage.removeItem('cravingUser');
       sessionStorage.removeItem('cravingToken');
