@@ -64,6 +64,15 @@ if (process.env.ALLOWED_ORIGINS) {
   });
 }
 
+if (process.env.CLIENT_URL) {
+  process.env.CLIENT_URL.split(',').forEach((origin) => {
+    const trimmed = origin.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -71,6 +80,7 @@ app.use(
         !origin ||
         allowedOrigins.includes(origin) ||
         origin.endsWith('.vercel.app') ||
+        origin.endsWith('.netlify.app') ||
         (process.env.NODE_ENV !== 'production' &&
           /^http:\/\/(10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+):517[3-5]$/.test(
             origin,
@@ -79,7 +89,7 @@ app.use(
         callback(null, true);
         return;
       }
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -131,7 +141,7 @@ app.use(errorHandler);
 const port = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, async () => {
+  app.listen(port, '0.0.0.0', async () => {
     console.log(`Server Started on port: ${port}`);
     connectDB();
     try {

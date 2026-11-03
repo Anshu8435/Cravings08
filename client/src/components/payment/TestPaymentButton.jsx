@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import api from '../../config/ApiConfig';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
-
-// Assuming VITE_API_URL or standard origin proxy
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const TestPaymentButton = ({ amount = 100 }) => {
   const [loading, setLoading] = useState(false);
@@ -22,11 +19,7 @@ const TestPaymentButton = ({ amount = 100 }) => {
       }
 
       // 2. Call backend to create order
-      const orderResponse = await axios.post(
-        `${API_URL}/payment/create-order`,
-        { amount },
-        { withCredentials: true },
-      );
+      const orderResponse = await api.post('/payment/create-order', { amount });
 
       const { data } = orderResponse.data;
 
@@ -41,15 +34,11 @@ const TestPaymentButton = ({ amount = 100 }) => {
         handler: async function (response) {
           try {
             // 4. Verify payment on the server
-            const verifyRes = await axios.post(
-              `${API_URL}/payment/verify`,
-              {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              },
-              { withCredentials: true },
-            );
+            const verifyRes = await api.post('/payment/verify', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            });
 
             if (verifyRes.data.success) {
               toast.success('Payment successful and verified!');

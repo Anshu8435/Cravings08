@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -7,8 +8,8 @@ const __dirname = path.dirname(__filename);
 
 export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
   try {
-    const gmailUser = (process.env.GMAIL_USERNAME || '').trim();
-    const gmailPass = (process.env.GMAIL_PASSCODE || '').replace(/\s+/g, '');
+    const gmailUser = (process.env.GMAIL_USERNAME || process.env.EMAIL_USER || '').trim();
+    const gmailPass = (process.env.GMAIL_PASSCODE || process.env.EMAIL_PASS || '').replace(/\s+/g, '');
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (!gmailUser || !gmailPass) {
@@ -27,6 +28,17 @@ export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
         pass: gmailPass,
       },
     });
+
+    const logoPath = path.join(__dirname, '../../../client/src/assets/circleLogo.png');
+    const attachments = [];
+    if (fs.existsSync(logoPath)) {
+      attachments.push({
+        filename: 'circleLogo.png',
+        path: logoPath,
+        cid: 'logoImage@cravings',
+        contentDisposition: 'inline',
+      });
+    }
 
     const mailOptions = {
       from: gmailUser
@@ -47,7 +59,7 @@ Stay hungry, stay happy!
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin:auto; border:1px solid #eee; padding:20px; background:#fff;">
           <div style="text-align:center; margin-bottom:20px;">
-            <img src="cid:logoImage@cravings" alt="Cravings Logo" width="80" style="margin-bottom:10px;" />
+            ${attachments.length > 0 ? '<img src="cid:logoImage@cravings" alt="Cravings Logo" width="80" style="margin-bottom:10px;" />' : ''}
             <h2 style="color:#ff6600; margin-top:10px;">OTP Verification</h2>
           </div>
           <p style="font-size:16px; color:#333;">Hello <strong>${fullName}</strong>,</p>
@@ -66,14 +78,7 @@ Stay hungry, stay happy!
           <p style="margin-top:30px; font-size:14px; color:#777;">Stay hungry, stay happy!<br/>— Cravings Team</p>
         </div>
       `,
-      attachments: [
-        {
-          filename: 'circleLogo.png',
-          path: path.join(__dirname, '../../../client/src/assets/circleLogo.png'),
-          cid: 'logoImage@cravings', // must match the cid in the HTML
-          contentDisposition: 'inline',
-        },
-      ],
+      attachments,
     };
 
     try {

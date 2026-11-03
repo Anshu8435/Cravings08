@@ -100,7 +100,7 @@ export const LogoutUser = async (req, res, next) => {
     res.clearCookie('Oreo', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
 
     res.status(200).json({ success: true, message: 'Logout Successfully' });
