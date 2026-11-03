@@ -73,7 +73,7 @@ const Navbar = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          'Unknown error occurred during registration. Please try again.',
+        'Unknown error occurred during registration. Please try again.',
       );
     }
   };
@@ -471,11 +471,10 @@ const Navbar = () => {
                     <button
                       key={type}
                       onClick={() => setOrderType(type)}
-                      className={`py-1.5 rounded-lg capitalize transition-all ${
-                        orderType === type
+                      className={`py-1.5 rounded-lg capitalize transition-all ${orderType === type
                           ? 'bg-[#ff5200] text-white shadow-xs'
                           : 'text-gray-600 dark:text-gray-400 hover:text-gray-900'
-                      }`}
+                        }`}
                     >
                       {type}
                     </button>
@@ -491,22 +490,20 @@ const Navbar = () => {
                 <div className="grid grid-cols-2 gap-2 text-xs font-bold">
                   <button
                     onClick={() => setPaymentMethod('upi')}
-                    className={`py-2 px-3 rounded-xl border text-left transition-all flex items-center gap-2 ${
-                      paymentMethod === 'upi'
+                    className={`py-2 px-3 rounded-xl border text-left transition-all flex items-center gap-2 ${paymentMethod === 'upi'
                         ? 'border-[#ff5200] bg-orange-50/80 dark:bg-orange-950/30 text-[#ff5200] font-black shadow-xs'
                         : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
-                    }`}
+                      }`}
                   >
                     <span>💳</span>
                     <span>Online / UPI</span>
                   </button>
                   <button
                     onClick={() => setPaymentMethod('cod')}
-                    className={`py-2 px-3 rounded-xl border text-left transition-all flex items-center gap-2 ${
-                      paymentMethod === 'cod'
+                    className={`py-2 px-3 rounded-xl border text-left transition-all flex items-center gap-2 ${paymentMethod === 'cod'
                         ? 'border-[#ff5200] bg-orange-50/80 dark:bg-orange-950/30 text-[#ff5200] font-black shadow-xs'
                         : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
-                    }`}
+                      }`}
                   >
                     <span>💵</span>
                     <span>Cash on Delivery</span>

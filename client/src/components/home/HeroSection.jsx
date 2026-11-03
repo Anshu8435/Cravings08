@@ -7,7 +7,7 @@ import {
   IoTimeOutline,
   IoLocationOutline,
 } from 'react-icons/io5';
-import FoodCanvas3D from './FoodCanvas3D';
+import CulinaryShowcaseHero from './CulinaryShowcaseHero';
 
 const HeroSection = ({
   user,
@@ -143,9 +143,9 @@ const HeroSection = ({
             </div>
           </div>
 
-          {/* Right Column: Signature 3D Culinary Canvas Centerpiece (5 Cols) */}
+          {/* Right Column: Signature Culinary Showcase Stage Centerpiece (5 Cols) */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
-            <FoodCanvas3D />
+            <CulinaryShowcaseHero />
           </div>
         </div>
       </div>
