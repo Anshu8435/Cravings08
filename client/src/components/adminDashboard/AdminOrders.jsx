@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../config/ApiConfig';
-import NoDataFound from '../NoDataFound';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -14,7 +13,7 @@ const AdminOrders = () => {
           setOrders(
             res.data.data.map((o) => ({
               id: `#ORD-${(o._id || '').slice(-4).toUpperCase()}`,
-              restaurant: o.restaurantId?.restaurantName || 'Restaurant',
+              restaurant: o.restaurantId?.restaurantName || 'Curated Kitchen',
               amount: `₹${o.billDetails?.finalAmount || o.billDetails?.totalAmount || 0}`,
               status: o.orderStatus
                 ? o.orderStatus.charAt(0).toUpperCase() + o.orderStatus.slice(1)
@@ -29,52 +28,82 @@ const AdminOrders = () => {
   }, []);
 
   return (
-    <div className="overflow-y-auto h-full">
-      <h2 className="text-2xl font-bold mb-6">All Platform Orders</h2>
-      <div className="bg-(--color-base-200) p-4 rounded-lg">
-        {orders.length === 0 && !isLoading ? (
-          <NoDataFound text="No orders placed on the platform yet." height="200px" />
-        ) : (
-          <table className="w-full">
+    <section className="dashboard-panel">
+      <div className="panel-heading">
+        <div>
+          <h2>Global platform orders</h2>
+          <p>Real-time order monitoring across all partner kitchens and districts.</p>
+        </div>
+        <span className="preview-note">{orders.length} Total orders</span>
+      </div>
+
+      {isLoading ? (
+        <div className="empty-state" style={{ padding: '40px 10px' }}>
+          <span className="empty-mark">⏳</span>
+          <h3>Loading orders…</h3>
+        </div>
+      ) : orders.length > 0 ? (
+        <div className="table-scroll">
+          <table>
             <thead>
-              <tr className="border-b border-(--color-secondary)">
-                <th className="text-left py-2">Order ID</th>
-                <th className="text-left py-2">Restaurant</th>
-                <th className="text-left py-2">Amount</th>
-                <th className="text-left py-2">Status</th>
-                <th className="text-left py-2">Date</th>
+              <tr>
+                <th>Order Ref</th>
+                <th>Restaurant / Kitchen</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-(--color-secondary) hover:bg-(--color-base-100) transition-colors"
-                >
-                  <td className="py-3">{order.id}</td>
-                  <td className="py-3">{order.restaurant}</td>
-                  <td className="py-3 font-semibold">{order.amount}</td>
-                  <td className="py-3">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
-                        order.status === 'Delivered'
-                          ? 'bg-green-100 text-green-800'
-                          : order.status === 'Preparing'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-3">{order.date}</td>
-                </tr>
-              ))}
+              {orders.map((order, index) => {
+                const status = (order.status || 'pending').toLowerCase();
+                return (
+                  <tr key={index}>
+                    <td>
+                      <strong>{order.id}</strong>
+                    </td>
+                    <td>{order.restaurant}</td>
+                    <td>
+                      <strong>{order.amount}</strong>
+                    </td>
+                    <td>
+                      <span
+                        className="status-pill"
+                        style={{
+                          background:
+                            status === 'delivered'
+                              ? 'rgba(82, 108, 68, 0.12)'
+                              : status === 'preparing'
+                                ? 'rgba(241, 190, 88, 0.2)'
+                                : 'rgba(180, 58, 47, 0.12)',
+                          color:
+                            status === 'delivered'
+                              ? 'var(--green)'
+                              : status === 'preparing'
+                                ? '#8e5e00'
+                                : 'var(--red)',
+                        }}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.82rem', color: 'var(--muted)' }}>{order.date}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        )}
-      </div>
-    </div>
+        </div>
+      ) : (
+        <div className="empty-state">
+          <span className="empty-mark">📋</span>
+          <h3>No orders placed yet</h3>
+          <p>
+            Global platform orders will appear here in real-time as customer orders are created.
+          </p>
+        </div>
+      )}
+    </section>
   );
 };
 
