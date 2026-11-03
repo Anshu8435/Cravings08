@@ -8,6 +8,7 @@ import {
   FaUserShield,
   FaEnvelope,
 } from 'react-icons/fa';
+import { IoSparklesOutline, IoShieldCheckmarkOutline } from 'react-icons/io5';
 
 const PrivacyPolicy = () => {
   const [openSection, setOpenSection] = useState(null);
@@ -19,201 +20,172 @@ const PrivacyPolicy = () => {
   const sections = [
     {
       title: 'Information We Collect',
-      icon: <FaDatabase className="text-(--color-primary) text-xl" />,
+      icon: <FaDatabase className="text-[#ff5400] text-xl" />,
       content: (
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
+        <ul className="list-disc pl-6 space-y-2 text-gray-300 text-sm">
           <li>
-            <strong>Account information:</strong> name, email address, phone number, and password
-            when you register.
+            <strong className="text-white">Account information:</strong> Full name, verified email,
+            telephone number, and encrypted password credentials.
           </li>
           <li>
-            <strong>Profile data:</strong> delivery addresses, profile photos, and payment
-            preferences.
+            <strong className="text-white">Profile data:</strong> Saved delivery geolocation
+            addresses, culinary taste preferences, and dietary restrictions.
           </li>
           <li>
-            <strong>Order history:</strong> restaurants visited, items ordered, and transaction
-            records.
+            <strong className="text-white">Order telemetry:</strong> Kitchen reservations, basket
+            items, transaction history, and courier feedback scores.
           </li>
           <li>
-            <strong>Device & usage data:</strong> IP address, browser type, pages visited, and
-            timestamps.
+            <strong className="text-white">Device & sensor data:</strong> Browser client
+            fingerprint, IP geolocation, session timestamps, and interface interactions.
           </li>
           <li>
-            <strong>Location data:</strong> GPS coordinates when you place an order or browse nearby
-            restaurants.
+            <strong className="text-white">Live Geolocation:</strong> Real-time coordinates used
+            strictly during active thermal deliveries for dispatch precision.
           </li>
         </ul>
       ),
     },
     {
       title: 'How We Use Your Information',
-      icon: <FaShieldAlt className="text-(--color-primary) text-xl" />,
+      icon: <FaShieldAlt className="text-[#ff5400] text-xl" />,
       content: (
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>To process and fulfill your food orders and coordinate delivery.</li>
-          <li>To personalise your experience and recommend relevant restaurants.</li>
-          <li>To communicate order updates, promotions, and service announcements.</li>
-          <li>To improve our platform through analytics and performance monitoring.</li>
-          <li>To comply with legal obligations and resolve disputes.</li>
+        <ul className="list-disc pl-6 space-y-2 text-gray-300 text-sm">
+          <li>
+            To transmit orders instantly to partner head chefs and coordinate thermal dispatch.
+          </li>
+          <li>
+            To personalize recommendations based on culinary taste profiles and macro fitness goals.
+          </li>
+          <li>To send mission-critical dispatch alerts, delivery OTPs, and receipt invoices.</li>
+          <li>
+            To benchmark delivery routes and minimize thermodynamic heat loss across the fleet.
+          </li>
+          <li>To satisfy tax compliance, FSSAI regulatory standards, and dispute resolution.</li>
         </ul>
       ),
     },
     {
-      title: 'Sharing Your Information',
-      icon: <FaShareAlt className="text-(--color-primary) text-xl" />,
+      title: 'Information Transmission & Security',
+      icon: <FaShareAlt className="text-[#ff5400] text-xl" />,
       content: (
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>With partner restaurants to fulfill your orders.</li>
-          <li>With delivery riders to complete your delivery.</li>
-          <li>With payment processors to handle transactions securely.</li>
-          <li>With analytics providers (anonymized or aggregated data only).</li>
-          <li>With law enforcement when required by applicable law.</li>
-          <li>We never sell your personal data to third parties for marketing purposes.</li>
+        <ul className="list-disc pl-6 space-y-2 text-gray-300 text-sm">
+          <li>Partner kitchens receive customer names and dish orders only.</li>
+          <li>
+            Couriers receive delivery addresses and contact masks only during active dispatches.
+          </li>
+          <li>Card and UPI payments are processed through PCI-DSS Level 1 certified gateways.</li>
+          <li>We never sell, rent, or trade your personal data to marketing brokers.</li>
         </ul>
       ),
     },
     {
-      title: 'Cookies & Tracking',
-      icon: <FaCookieBite className="text-(--color-primary) text-xl" />,
+      title: 'Cookies & Session Data',
+      icon: <FaCookieBite className="text-[#ff5400] text-xl" />,
       content: (
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>We use essential cookies to keep you logged in and maintain session state.</li>
-          <li>Analytics cookies help us understand how users navigate the platform.</li>
-          <li>You can disable non-essential cookies in your browser settings at any time.</li>
-          <li>
-            We use third-party services (e.g. Google Analytics) that may set their own cookies.
-          </li>
+        <ul className="list-disc pl-6 space-y-2 text-gray-300 text-sm">
+          <li>Essential JWT tokens (`Oreo`, `kitkat`) maintain secure, authenticated sessions.</li>
+          <li>Local storage caches temporary cart selections to prevent accidental data loss.</li>
+          <li>No non-consensual third-party cross-site trackers are enabled on the platform.</li>
         </ul>
       ),
     },
     {
-      title: 'Data Retention',
-      icon: <FaHistory className="text-(--color-primary) text-xl" />,
+      title: 'Data Retention & Rights',
+      icon: <FaUserShield className="text-[#ff5400] text-xl" />,
       content: (
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>We retain your account data for as long as your account is active.</li>
-          <li>Order history is retained for up to 5 years for legal and financial compliance.</li>
-          <li>You may request deletion of your account and associated data at any time.</li>
-          <li>Some data may be retained in anonymized form for analytics even after deletion.</li>
-        </ul>
-      ),
-    },
-    {
-      title: 'Your Rights',
-      icon: <FaUserShield className="text-(--color-primary) text-xl" />,
-      content: (
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>
-            <strong>Access:</strong> request a copy of the personal data we hold about you.
-          </li>
-          <li>
-            <strong>Correction:</strong> update or correct inaccurate information via your settings.
-          </li>
-          <li>
-            <strong>Deletion:</strong> request erasure of your personal data (subject to legal
-            retention requirements).
-          </li>
-          <li>
-            <strong>Portability:</strong> receive your data in a structured, machine-readable
-            format.
-          </li>
-          <li>
-            <strong>Objection:</strong> opt out of marketing communications at any time.
-          </li>
+        <ul className="list-disc pl-6 space-y-2 text-gray-300 text-sm">
+          <li>You may export or request permanent deletion of your profile data at any time.</li>
+          <li>Tax invoices and order history are archived for statutory compliance.</li>
+          <li>Our Data Protection Officer can be reached directly at privacy@cravings.com.</li>
         </ul>
       ),
     },
   ];
 
   return (
-    <div className="bg-(--color-base-100) min-h-screen font-sans">
+    <div className="bg-[#080a11] min-h-screen text-gray-100 font-sans selection:bg-[#ff5400] selection:text-white">
       {/* Hero Banner Area */}
-      <div
-        className="relative h-100 bg-cover bg-center flex items-center justify-center text-center text-white"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop')`,
-        }}
-      >
-        <div className="z-10 px-4">
-          <div className="flex justify-center mb-4">
-            <FaShieldAlt className="text-5xl text-(--color-primary)" />
+      <div className="relative py-20 bg-[#0e121d] border-b border-white/10 text-center text-white overflow-hidden">
+        {/* Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#ff5400]/10 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="relative z-10 max-w-4xl mx-auto px-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff5400]/15 border border-[#ff5400]/40 text-[#ff5400] text-xs font-black tracking-widest uppercase mb-4">
+            <IoShieldCheckmarkOutline /> Security & Compliance
           </div>
-          <h1 className="text-5xl font-bold mb-4 drop-shadow-md">
-            Privacy <span className="text-(--color-primary)">Policy</span>
+          <h1 className="text-3xl sm:text-5xl font-black mb-3 tracking-tight font-['Space_Grotesk']">
+            Privacy{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff5400] via-[#f59e0b] to-[#e11d48]">
+              Policy
+            </span>
           </h1>
-          <p className="text-lg max-w-2xl mx-auto drop-shadow-md mb-2">
-            We value your privacy. Learn how Cravings collects, uses, and protects your personal
-            information.
+          <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
+            We value your trust. Learn how Cravings collects, protects, and handles your data with
+            enterprise-grade encryption.
           </p>
         </div>
       </div>
 
-      {/* Intro Text */}
-      <div className="max-w-3xl mx-auto px-4 py-12 text-center">
-        <p className="text-gray-500 text-lg leading-relaxed">
-          This Privacy Policy describes how <strong className="text-gray-700">Cravings</strong>{' '}
-          ("we", "us", or "our") collects, uses, and shares information about you when you use our
-          website, mobile application, and related services. By using Cravings, you agree to the
-          practices described in this policy.
-        </p>
-      </div>
-
       {/* Accordion Sections */}
-      <div className="max-w-3xl mx-auto px-4 pb-20">
+      <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="space-y-4">
-          {sections.map((section, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm transition-all duration-200 hover:shadow-md"
-            >
-              <button
-                className="w-full px-6 py-4 flex items-center justify-between focus:outline-none"
-                onClick={() => toggleSection(index)}
-              >
-                <div className="flex items-center gap-4">
-                  {section.icon}
-                  <span className="font-semibold text-gray-700 text-lg">{section.title}</span>
-                </div>
-                <svg
-                  className={`w-5 h-5 text-gray-500 transform transition-transform duration-200 ${
-                    openSection === index ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
+          {sections.map((section, index) => {
+            const isOpen = openSection === index;
+            return (
               <div
-                className={`transition-all duration-300 ease-in-out ${
-                  openSection === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                } overflow-hidden`}
+                key={index}
+                className={`border rounded-2xl overflow-hidden transition-all duration-300 ${
+                  isOpen
+                    ? 'bg-[#131826] border-[#ff5400]/40 shadow-xl'
+                    : 'bg-[#0e121d] border-white/10 hover:border-white/20'
+                }`}
               >
-                <div className="px-14 pb-6 pt-2">{section.content}</div>
+                <button
+                  className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
+                  onClick={() => toggleSection(index)}
+                >
+                  <div className="flex items-center gap-4">
+                    {section.icon}
+                    <span className="font-black text-white font-['Space_Grotesk'] text-base sm:text-lg">
+                      {section.title}
+                    </span>
+                  </div>
+                  <span
+                    className={`text-[#ff5400] text-sm transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                  >
+                    ▼
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <div className="px-6 pb-6 pt-2 border-t border-white/5 animate-fadeIn">
+                    {section.content}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
       {/* Contact Section */}
-      <div className="bg-(--color-primary) text-white py-16 text-center w-full">
+      <div className="bg-[#0e121d] border-t border-white/10 py-16 text-center">
         <div className="flex justify-center mb-4">
-          <FaEnvelope className="text-3xl text-white" />
+          <FaEnvelope className="text-3xl text-[#ff5400]" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">Questions about your privacy?</h2>
-        <p className="max-w-xl mx-auto mb-6 text-sm opacity-90">
-          Reach out to our Data Protection team and we'll respond within 2 business days.
+        <h2 className="text-2xl font-black text-white font-['Space_Grotesk'] mb-2">
+          Questions about your privacy?
+        </h2>
+        <p className="max-w-md mx-auto mb-6 text-xs text-gray-400">
+          Reach out to our Data Privacy & Compliance Officer. We respond to all verified inquiries
+          within 24 hours.
         </p>
-        <a href="mailto:contact@cravings.com" className="font-semibold text-sm">
-          contact@cravings.com
+        <a
+          href="mailto:privacy@cravings.com"
+          className="inline-block px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition"
+        >
+          privacy@cravings.com
         </a>
       </div>
     </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { IoSparklesOutline, IoLockClosedOutline, IoMailOutline } from 'react-icons/io5';
 import api from '../config/ApiConfig';
 import { useAuth } from '../context/AuthContext';
 import ForgotPasswordModal from '../components/commonModals/ForgotPasswordModal';
@@ -31,10 +32,8 @@ const Login = () => {
 
   const validateForm = (data) => {
     const newErrors = {};
-
     if (!data.email.trim()) newErrors.email = 'Email is required';
     if (!data.password) newErrors.password = 'Password is required';
-
     return newErrors;
   };
 
@@ -62,16 +61,12 @@ const Login = () => {
       }
       setUser(res.data.data);
       setIsLogin(true);
-      //console.log(res.data.data.userType);
       setRole(res.data.data.userType);
 
-      res.data.data.userType === 'restaurant' && navigate('/restaurant-dashboard');
-
-      res.data.data.userType === 'rider' && navigate('/rider-dashboard');
-
-      res.data.data.userType === 'admin' && navigate('/admin-dashboard');
-
-      res.data.data.userType === 'customer' && navigate('/customer-dashboard');
+      if (res.data.data.userType === 'restaurant') navigate('/restaurant-dashboard');
+      else if (res.data.data.userType === 'rider') navigate('/rider-dashboard');
+      else if (res.data.data.userType === 'admin') navigate('/admin-dashboard');
+      else navigate('/customer-dashboard');
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
@@ -84,115 +79,129 @@ const Login = () => {
 
   return (
     <>
-      <div className="h-[90vh] bg-[url('/foodTable.webp')] bg-black/60 bg-blend-overlay flex items-center justify-start bg-cover bg-center p-10 md:ps-30">
-        <div className="bg-white rounded-lg shadow-md px-10 py-6 max-w-md w-full">
-          <h1 className="text-3xl font-bold text-(--color-primary) mb-2 text-center">
-            Welcome Back
-          </h1>
-          <p className="text-(--color-secondary) text-center mb-6">
-            Login to your Cravings account
-          </p>
+      <div className="min-h-screen bg-[#080a11] text-gray-100 flex items-center justify-center py-16 px-4 relative overflow-hidden selection:bg-[#ff5400] selection:text-white">
+        {/* Cinematic glow circles */}
+        <div className="absolute top-1/4 left-1/3 w-[450px] h-[450px] bg-[#ff5400]/15 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/3 w-[450px] h-[450px] bg-[#e11d48]/15 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="bg-[#131826]/95 backdrop-blur-xl border border-white/10 rounded-3xl p-8 sm:p-10 max-w-md w-full shadow-2xl relative z-10">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5400]/10 border border-[#ff5400]/30 text-[#ff5400] text-xs font-black tracking-widest uppercase mb-3">
+              <IoSparklesOutline /> Cravings Portal
+            </div>
+            <h1 className="text-3xl font-black text-white font-['Space_Grotesk'] tracking-tight">
+              Welcome Back
+            </h1>
+            <p className="text-xs text-gray-400 mt-1">
+              Sign in to manage your culinary reservations and orders
+            </p>
+          </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
-            <div className="mb-4">
-              <label className="block text-(--color-neutral) font-semibold mb-2">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email"
-                className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-                  errors.email ? 'border-(--color-error) border-2' : 'border-(--color-base-300)'
-                }`}
-              />
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1.5">Email Address</label>
+              <div className="relative">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="name@example.com"
+                  className={`w-full pl-10 pr-4 py-3 bg-[#080a11]/80 border rounded-2xl text-sm text-white placeholder-gray-500 focus:outline-none transition-all duration-300 ${
+                    errors.email
+                      ? 'border-rose-500'
+                      : 'border-white/10 focus:border-[#ff5400] focus:ring-1 focus:ring-[#ff5400]/50'
+                  }`}
+                />
+                <IoMailOutline className="absolute left-3.5 top-3.5 text-gray-400 text-base" />
+              </div>
               {errors.email && (
-                <span className="text-(--color-error) text-xs mt-1 block">{errors.email}</span>
+                <span className="text-rose-400 text-xs mt-1 block font-medium">{errors.email}</span>
               )}
             </div>
 
             {/* Password */}
-            <div className="mb-4">
-              <label className="block text-(--color-neutral) font-semibold mb-2">Password</label>
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1.5">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Enter your password"
-                  className={`w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
+                  placeholder="Enter your security code"
+                  className={`w-full pl-10 pr-11 py-3 bg-[#080a11]/80 border rounded-2xl text-sm text-white placeholder-gray-500 focus:outline-none transition-all duration-300 ${
                     errors.password
-                      ? 'border-(--color-error) border-2'
-                      : 'border-(--color-base-300)'
+                      ? 'border-rose-500'
+                      : 'border-white/10 focus:border-[#ff5400] focus:ring-1 focus:ring-[#ff5400]/50'
                   }`}
                 />
+                <IoLockClosedOutline className="absolute left-3.5 top-3.5 text-gray-400 text-base" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-(--color-secondary) hover:text-(--color-primary) transition-colors"
+                  className="absolute right-3.5 top-3.5 text-gray-400 hover:text-white transition-colors"
                 >
-                  {showPassword ? (
-                    <FaEyeSlash className="text-sm" />
-                  ) : (
-                    <FaEye className="text-sm" />
-                  )}
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
               {errors.password && (
-                <span className="text-(--color-error) text-xs mt-1 block">{errors.password}</span>
+                <span className="text-rose-400 text-xs mt-1 block font-medium">
+                  {errors.password}
+                </span>
               )}
             </div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between mb-6">
-              <label className="flex items-center gap-2 cursor-pointer text-(--color-secondary)">
+            <div className="flex items-center justify-between text-xs pt-1">
+              <label className="flex items-center gap-2 cursor-pointer text-gray-400 hover:text-gray-300">
                 <input
                   type="checkbox"
                   name="rememberMe"
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
-                  className="cursor-pointer"
+                  className="w-4 h-4 rounded bg-[#080a11] border-white/20 text-[#ff5400] focus:ring-0 cursor-pointer"
                 />
-                <span className="text-sm">Remember me</span>
+                <span>Remember me</span>
               </label>
-              <div
+              <button
+                type="button"
                 onClick={() => setIsForgotPasswordModalOpen(true)}
-                className="text-sm text-(--color-primary) hover:underline transition-colors"
+                className="text-[#ff5400] hover:underline font-bold"
               >
                 Forgot Password?
-              </div>
+              </button>
             </div>
 
             {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-(--color-primary) text-white font-semibold rounded-md hover:bg-orange-700 transition-colors duration-300 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full mt-2 py-3.5 bg-gradient-to-r from-[#ff5400] to-[#e11d48] hover:from-[#e04800] hover:to-[#cc163d] text-white font-black text-sm rounded-2xl shadow-lg shadow-[#ff5400]/25 hover:shadow-[#ff5400]/40 transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Authenticating...' : 'Sign In to Cravings'}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="relative mb-6">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-white/10"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Don't have an account?</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-3 bg-[#131826] text-gray-500 font-semibold">
+                New to Cravings?
+              </span>
             </div>
           </div>
 
           {/* Register Link */}
-          <p className="text-center text-(--color-secondary) text-sm">
-            <Link
-              to="/register"
-              className="text-(--color-primary) font-semibold hover:underline transition-colors"
-            >
-              Create an account
+          <p className="text-center text-gray-400 text-xs">
+            Experience the culinary revolution.{' '}
+            <Link to="/register" className="text-[#ff5400] font-black hover:underline">
+              Create Account →
             </Link>
           </p>
         </div>

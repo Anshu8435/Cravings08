@@ -33,12 +33,12 @@ const Sidebar = ({
     return (
       <li
         key={tab.value}
-        className={`group relative cursor-pointer flex items-center transition-all duration-500 ease-out ${
+        className={`group relative cursor-pointer flex items-center transition-all duration-300 ease-out ${
           isCollapsed ? 'justify-center p-3 w-12 h-12' : 'px-4 py-3 w-full gap-4'
-        } rounded-sm ${
+        } rounded-2xl ${
           isActive
-            ? 'bg-(--color-primary) text-(--color-primary-content) shadow-[0_8px_20px_-4px_rgba(0,0,0,0.3)] ring-1 ring-white/20'
-            : 'text-(--color-neutral) hover:bg-black/5 dark:hover:bg-white/10 hover:shadow-inner'
+            ? 'bg-gradient-to-r from-[#ff5400] to-[#e11d48] text-white shadow-lg shadow-[#ff5400]/25 ring-1 ring-white/20'
+            : 'text-gray-400 hover:text-white hover:bg-white/5'
         } my-1`}
         onClick={() => setActiveTab(tab.value)}
       >
@@ -77,26 +77,24 @@ const Sidebar = ({
     <div
       onMouseEnter={() => setIsCollapsed(false)}
       onMouseLeave={() => setIsCollapsed(true)}
-      className={`relative h-full flex-col bg-white/40 dark:bg-black/40 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 dark:border-white/10 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) flex ${
+      className={`relative h-full flex-col bg-[#0e121d]/95 backdrop-blur-2xl shadow-2xl border-r border-white/10 transition-all duration-300 flex ${
         isCollapsed ? 'w-24 items-center py-8' : 'w-72 p-6 z-50 absolute md:relative md:z-auto'
       }`}
     >
       {/* Decorative Top Accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-(--color-primary) rounded-b-full opacity-50"></div>
-
-      {/* Floating Toggle Button Removed for Hover Behavior */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-[#ff5400] to-[#e11d48] rounded-b-full"></div>
 
       {/* Sidebar Header / Logo Area */}
       <div className={`w-full flex items-center mb-8 ${isCollapsed ? 'justify-center' : 'px-2'}`}>
-        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-(--color-primary) to-orange-400 flex items-center justify-center shadow-lg text-white font-black text-xl shrink-0">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ff5400] to-[#e11d48] flex items-center justify-center shadow-lg shadow-[#ff5400]/25 text-white font-black text-xl shrink-0 font-['Space_Grotesk']">
           {title.charAt(0)}
         </div>
         {!isCollapsed && (
           <div className="ml-4 flex flex-col">
-            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-linear-to-r from-gray-800 to-gray-500 dark:from-white dark:to-gray-300">
+            <span className="font-black text-lg tracking-tight text-white font-['Space_Grotesk']">
               {title}
             </span>
-            <span className="text-[10px] font-bold text-(--color-primary) uppercase tracking-widest">
+            <span className="text-[10px] font-black text-[#ff5400] uppercase tracking-widest">
               {subtitle}
             </span>
           </div>

@@ -9,75 +9,203 @@ button {
 }
 
 :root {
-  /* Primary */
-  --color-primary: #c2410c;
-  --color-primary-content: #ffffff;
+  /* CRAVINGS — Beyond Ordinary Taste Design System */
 
-  /* Secondary */
-  --color-secondary: #6b7280;
-  --color-secondary-content: #ffffff;
+  /* Primary & Signature Accents */
+  --color-primary: #ff5400; /* Vibrant Burnt Orange */
+  --color-primary-hover: #e04800;
+  --color-primary-glow: rgba(255, 84, 0, 0.35);
 
-  /* Accent */
-  --color-accent: #d9468f;
-  --color-accent-content: #ffffff;
+  --color-tomato: #e11d48; /* Premium Tomato Red / Crimson */
+  --color-tomato-hover: #be123c;
+  --color-tomato-glow: rgba(225, 29, 72, 0.35);
 
-  /* Neutral */
-  --color-neutral: #3f3f46;
-  --color-neutral-content: #f4f4f5;
+  --color-gold: #f59e0b; /* Subtle Tuscan Honey Gold */
+  --color-gold-hover: #d97706;
+  --color-gold-soft: #fef3c7;
 
-  /* Base Surfaces */
-  --color-base-100: #fff8f1;
-  --color-base-200: #f5ede5;
-  --color-base-300: #e7d9c9;
-  --color-base-content: #2d1b10;
+  --color-emerald: #10b981; /* Balanced Fresh Garden Green */
+  --color-emerald-soft: #ecfdf5;
 
-  /* Info */
-  --color-info: #0ea5e9;
-  --color-info-content: #ffffff;
+  /* Surfaces: Dark Cinematic Environments */
+  --color-midnight: #080a11; /* Deep Midnight Charcoal */
+  --color-charcoal: #0e121d; /* Elevated Charcoal Card Surface */
+  --color-charcoal-light: #161c2c;
 
-  /* Success */
-  --color-success: #22c55e;
-  --color-success-content: #ffffff;
+  /* Surfaces: Warm Gourmet Cream Canvas */
+  --color-cream: #faf6f0; /* Warm Linen Cream Base */
+  --color-cream-surface: #f4eee4; /* Subtle Cream Elevation */
+  --color-cream-card: #ffffff;
 
-  /* Warning */
+  /* Text & Typography */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-dark: #f8fafc;
+  --color-text-muted: #94a3b8;
+
+  /* Status Colors */
+  --color-info: #0284c7;
+  --color-success: #10b981;
   --color-warning: #f59e0b;
-  --color-warning-content: #2d1b10;
-
-  /* Error */
   --color-error: #ef4444;
-  --color-error-content: #ffffff;
-
-  --color-star: #3f3f46;
 }
 
-/* Remove number input spinner buttons */
+/* Typography Hierarchy */
+body {
+  font-family:
+    'Plus Jakarta Sans',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: var(--color-midnight);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: 'Space Grotesk', 'Sora', sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.font-editorial {
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.015em;
+}
+
+/* Advanced Glassmorphism */
+.glass-midnight {
+  background: rgba(14, 18, 29, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-cream {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* 3D Depth & Cinematic Shadows */
+.shadow-cinematic {
+  box-shadow:
+    0 25px 60px -15px rgba(0, 0, 0, 0.6),
+    0 0 40px -10px rgba(255, 84, 0, 0.15);
+}
+
+.shadow-glow-orange {
+  box-shadow: 0 10px 30px -5px rgba(255, 84, 0, 0.35);
+}
+
+.shadow-glow-tomato {
+  box-shadow: 0 10px 30px -5px rgba(225, 29, 72, 0.35);
+}
+
+.shadow-glow-gold {
+  box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.35);
+}
+
+/* 3D Tilt Card Perspective */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-3d:hover {
+  transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+}
+
+/* Floating Animation Keyframes */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(1.5deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(-1.5deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 7s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Sleek Gourmet Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080a11;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 84, 0, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5400;
+}
+
+/* Input spinners */
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
-  appearance: none;
   margin: 0;
-}
-
-input[type='number'] {
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
-
-/* Remove password input eye icon */
-input[type='password']::-ms-reveal {
-  display: none;
-}
-
-/* View Only Mode Styles */
-.view-only-mode input:disabled,
-.view-only-mode textarea:disabled,
-.view-only-mode select:disabled {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--color-base-content);
-  opacity: 1;
-  padding-left: 0;
-  padding-right: 0;
-  appearance: none;
-  -webkit-appearance: none;
 }

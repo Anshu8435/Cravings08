@@ -48,13 +48,15 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden relative">
+    <div className="h-[calc(100vh-72px)] flex flex-col lg:flex-row overflow-hidden relative bg-[#080a11] text-gray-100 selection:bg-[#ff5400] selection:text-white">
       {/* Mobile Header for Hamburger */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-40 shrink-0 shadow-sm">
-        <span className="font-bold text-xl text-gray-800 dark:text-white">Customer Dashboard</span>
+      <div className="lg:hidden flex items-center justify-between p-4 bg-[#0e121d] border-b border-white/10 z-40 shrink-0 shadow-sm">
+        <span className="font-black text-xl text-white font-['Space_Grotesk']">
+          Customer Dashboard
+        </span>
         <button
           onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-          className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-(--color-primary) hover:bg-gray-200 transition-colors"
+          className="p-2 bg-white/5 rounded-xl text-[#ff5400] hover:bg-white/10 transition-colors"
         >
           {isMobileSidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
         </button>
@@ -63,7 +65,7 @@ const CustomerDashboard = () => {
       {/* Sidebar Wrapper */}
       <div
         className={`
-        fixed lg:relative top-[64px] lg:top-0 left-0 h-[calc(100vh-64px)] lg:h-full shrink-0 z-50
+        fixed lg:relative top-[72px] lg:top-0 left-0 h-[calc(100vh-72px)] lg:h-full shrink-0 z-50
         transition-transform duration-300 ease-in-out
         ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}
@@ -83,13 +85,13 @@ const CustomerDashboard = () => {
       {/* Overlay for mobile */}
       {isMobileSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden top-[64px]"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden top-[72px]"
           onClick={() => setIsMobileSidebarOpen(false)}
         />
       )}
 
       {/* Main Content */}
-      <div className="flex-1 bg-(--color-base-100) p-4 rounded-2xl shadow-xl h-full overflow-y-auto w-full">
+      <div className="flex-1 bg-[#0b0e17] p-4 sm:p-6 rounded-3xl shadow-2xl h-full overflow-y-auto w-full border border-white/10 m-0 lg:m-2">
         {activeTab === 'overview' && <CustomerOverview />}
         {activeTab === 'orders' && <CustomerOrders />}
         {activeTab === 'settings' && <CustomerSetting />}

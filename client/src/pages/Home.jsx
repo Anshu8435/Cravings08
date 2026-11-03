@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { IoSearch, IoStar } from 'react-icons/io5';
 import { MdRestaurant, MdLocalDining, MdFastfood, MdCake, MdLunchDining } from 'react-icons/md';
-import CarouselComponent from '../components/CarouselComponent';
-import CravingFeed from '../components/CravingFeed';
 import { useAuth } from '../context/AuthContext';
 import api from '../config/ApiConfig';
 
 import HeroSection from '../components/home/HeroSection';
+import FoodCategories3D from '../components/home/FoodCategories3D';
+import SignatureDishesShowcase from '../components/home/SignatureDishesShowcase';
 import RestaurantsGrid from '../components/home/RestaurantsGrid';
-import StatisticsSection from '../components/home/StatisticsSection';
+import TrendingCollection from '../components/home/TrendingCollection';
+import SpecialOffersSection from '../components/home/SpecialOffersSection';
+import WhyChooseCravings from '../components/home/WhyChooseCravings';
+import BrandStorySection from '../components/home/BrandStorySection';
 import CustomerFeedbackSection from '../components/home/CustomerFeedbackSection';
 import CTASection from '../components/home/CTASection';
 
@@ -69,7 +71,6 @@ const Home = () => {
         setLoading(true);
         const response = await api.get('/public/restaurants');
 
-        // Map API response to match component's expected format
         const formattedRestaurants = response.data.data.map((restaurant) => ({
           id: restaurant._id,
           name: restaurant.restaurantName,
@@ -93,7 +94,6 @@ const Home = () => {
         setFilteredRestaurants(formattedRestaurants);
       } catch (error) {
         console.error('Error loading restaurants:', error);
-        // Fallback to empty state on error
         setRestaurants([]);
         setFilteredRestaurants([]);
       } finally {
@@ -108,7 +108,6 @@ const Home = () => {
   useEffect(() => {
     let filtered = restaurants;
 
-    // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(
         (r) =>
@@ -118,26 +117,29 @@ const Home = () => {
       );
     }
 
-    // Filter by category (map to cuisine types)
     if (selectedCategory !== 'all') {
       const categoryMap = {
         veg: 'vegetarian',
         nonveg: 'non-vegetarian',
         dessert: 'desserts',
         others: 'other',
+        pizza: 'pizza',
+        burgers: 'burger',
+        asian: 'asian',
       };
 
-      const selectedCuisine = categoryMap[selectedCategory];
-      if (selectedCuisine) {
-        filtered = filtered.filter((r) => r.cuisines.toLowerCase().includes(selectedCuisine));
-      }
+      const selectedCuisine = categoryMap[selectedCategory] || selectedCategory;
+      filtered = filtered.filter((r) =>
+        r.cuisines.toLowerCase().includes(selectedCuisine.toLowerCase()),
+      );
     }
 
     setFilteredRestaurants(filtered);
   }, [searchQuery, selectedCategory, restaurants]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#080a11] text-gray-100 selection:bg-[#ff5400] selection:text-white">
+      {/* 01. Immersive 3D Hero */}
       <HeroSection
         user={user}
         navigate={navigate}
@@ -147,6 +149,16 @@ const Home = () => {
         handleNavigateToDashboard={handleNavigateToDashboard}
       />
 
+      {/* 02. Animated Food Categories */}
+      <FoodCategories3D
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
+
+      {/* 03. Signature Dishes Showcase */}
+      <SignatureDishesShowcase />
+
+      {/* 04 & 06. Popular Restaurants & Interactive Feed */}
       <RestaurantsGrid
         viewMode={viewMode}
         setViewMode={setViewMode}
@@ -159,10 +171,22 @@ const Home = () => {
         setSelectedCategory={setSelectedCategory}
       />
 
-      <StatisticsSection />
+      {/* 05. Trending Food Collection */}
+      <TrendingCollection />
 
+      {/* 07. Special Offers and Promotions */}
+      <SpecialOffersSection />
+
+      {/* 08. Why Choose Cravings */}
+      <WhyChooseCravings />
+
+      {/* 09. Cinematic Brand Story */}
+      <BrandStorySection />
+
+      {/* 10. Customer Reviews */}
       <CustomerFeedbackSection />
 
+      {/* 11. Premium App Promotion & Partner Onboarding */}
       <CTASection
         navigate={navigate}
         user={user}

@@ -65,8 +65,8 @@ const DishCard = ({ dish, isFlipped, handleSwipe, addToCart }) => {
         {/* Dish Details & Macros */}
         <div className="flex-1 p-6 flex flex-col bg-white dark:bg-gray-800">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-2xl font-bold text-(--color-primary)">₹{dish.price}</span>
-            <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 px-3 py-1 rounded-full text-sm font-bold">
+            <span className="text-2xl font-black text-[#ff5200]">₹{dish.price}</span>
+            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-3 py-1 rounded-full text-sm font-black">
               ★ {dish.rating || '4.5'}
             </div>
           </div>
@@ -117,7 +117,7 @@ const DishCard = ({ dish, isFlipped, handleSwipe, addToCart }) => {
             </button>
             <button
               onClick={addToCart}
-              className="w-14 h-14 rounded-full bg-(--color-primary) text-white shadow-xl shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 transition-all hover:scale-110 self-end mb-2"
+              className="w-14 h-14 rounded-full bg-linear-to-r from-[#ff5200] to-[#f97316] text-white shadow-xl shadow-orange-500/30 flex items-center justify-center hover:opacity-95 transition-all hover:scale-110 self-end mb-2"
             >
               <FaShoppingCart size={20} />
             </button>
@@ -133,9 +133,7 @@ const DishCard = ({ dish, isFlipped, handleSwipe, addToCart }) => {
 
       {/* Back */}
       <div className="absolute inset-0 [-webkit-backface-visibility:hidden] [backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full bg-gray-900 text-white rounded-3xl shadow-2xl overflow-hidden border border-gray-700 p-6 flex flex-col items-center justify-center">
-        <h2 className="text-3xl font-extrabold mb-6 text-(--color-primary) text-center">
-          {dish.itemName}
-        </h2>
+        <h2 className="text-3xl font-extrabold mb-6 text-[#ff5200] text-center">{dish.itemName}</h2>
         <div className="w-full bg-black/40 rounded-xl p-5 mb-4 border border-gray-700">
           <div className="flex justify-between border-b border-white/10 pb-3 mb-3">
             <span className="text-gray-400 uppercase text-sm font-bold tracking-wider">
@@ -176,7 +174,7 @@ const DishCard = ({ dish, isFlipped, handleSwipe, addToCart }) => {
           </button>
           <button
             onClick={addToCart}
-            className="w-14 h-14 rounded-full bg-(--color-primary) text-white shadow-xl shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 transition-all hover:scale-110 self-end mb-2"
+            className="w-14 h-14 rounded-full bg-linear-to-r from-[#ff5200] to-[#f97316] text-white shadow-xl shadow-orange-500/30 flex items-center justify-center hover:opacity-95 transition-all hover:scale-110 self-end mb-2"
           >
             <FaShoppingCart size={20} />
           </button>

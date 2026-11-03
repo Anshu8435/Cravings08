@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../config/ApiConfig';
 import toast from 'react-hot-toast';
-import Loader from '../components/Loader';
 import NoDataFound from '../components/NoDataFound';
 import NoDataFoundGif from '../assets/NoDataFound.gif';
 import {
@@ -10,7 +9,7 @@ import {
   IoStar,
   IoLocationOutline,
   IoTimeOutline,
-  IoCartOutline,
+  IoSparklesOutline,
 } from 'react-icons/io5';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -18,13 +17,12 @@ import { useCart } from '../context/CartContext';
 const RestaurantDetailsPage = () => {
   const { restaurantId } = useParams();
   const navigate = useNavigate();
-  const { user, isLogin } = useAuth(); // for checking if user is logged in for checkout button
+  const { isLogin } = useAuth();
 
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { cart, getCartQuantity, handleAddToCart, handleRemoveFromCart, totalItems, totalAmount } =
-    useCart();
+  const { getCartQuantity, handleAddToCart, handleRemoveFromCart } = useCart();
 
   const fetchRestaurantDetails = async () => {
     try {
@@ -33,8 +31,7 @@ const RestaurantDetailsPage = () => {
       setRestaurantDetails(response.data.data);
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          'Unknown error occurred during fetching restaurant details. Please try again.',
+        error.response?.data?.message || 'Could not load restaurant menu. Please try again.',
       );
     } finally {
       setIsLoading(false);
@@ -42,24 +39,28 @@ const RestaurantDetailsPage = () => {
   };
 
   useEffect(() => {
+    fetchRestaurantDetails();
+  }, [restaurantId]);
+
+  const onAddItem = (item) => {
     if (!isLogin) {
-      toast.error('Please log in to browse restaurants and menus.');
+      toast.error('Please log in to add items to your cart.');
       navigate('/login');
       return;
     }
-    fetchRestaurantDetails();
-  }, [isLogin, restaurantId]);
+    handleAddToCart({ ...item, restaurantId: restaurantDetails?.restaurantId?._id });
+  };
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#F6F4EB]">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#080a11] text-white">
         <img
           src={NoDataFoundGif}
           alt="Loading..."
-          className="w-40 h-40 object-contain drop-shadow-md"
+          className="w-32 h-32 object-contain filter invert opacity-80"
         />
-        <h2 className="mt-4 text-2xl font-extrabold text-[#c2410c] animate-pulse">
-          Loading Menu...
+        <h2 className="mt-4 text-xl font-black font-['Space_Grotesk'] text-[#ff5400] animate-pulse">
+          Curating Handcrafted Menu...
         </h2>
       </div>
     );
@@ -67,13 +68,13 @@ const RestaurantDetailsPage = () => {
 
   if (!restaurantDetails) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#080a11] text-white p-6">
         <NoDataFound height="auto" width="100%" text="Restaurant Not Found" />
         <button
           onClick={() => navigate('/order-now')}
-          className="mt-6 bg-[#c2410c] text-white px-6 py-2 rounded-lg shadow font-bold"
+          className="mt-6 bg-gradient-to-r from-[#ff5400] to-[#e11d48] text-white px-8 py-3 rounded-2xl shadow-lg font-black hover:scale-105 active:scale-95 transition"
         >
-          Back to Restaurants
+          Explore Other Haute Kitchens
         </button>
       </div>
     );
@@ -82,61 +83,80 @@ const RestaurantDetailsPage = () => {
   const restaurant = restaurantDetails.restaurantId;
   const menuItems = restaurantDetails.menuItems || [];
 
-  const defaultRestaurantImage = 'https://placehold.co/800x400?text=Restaurant';
+  const defaultRestaurantImage =
+    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop';
   const restaurantImage =
     restaurant?.coverImage?.url || restaurant?.restaurantImage?.[0]?.url || defaultRestaurantImage;
 
   return (
-    <div className="min-h-screen bg-[#F6F4EB] pb-24 font-sans relative">
-      <div className="bg-[#FAF7F2] shadow-md relative z-10">
-        <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
+    <div className="min-h-screen bg-[#080a11] pb-24 font-sans text-gray-100 selection:bg-[#ff5400] selection:text-white">
+      {/* Restaurant Header Banner Area */}
+      <div className="bg-[#0e121d] border-b border-white/10 shadow-2xl relative z-10 overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute top-0 right-1/4 w-[450px] h-[300px] bg-[#ff5400]/10 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8 relative z-10">
           {/* Back button */}
           <button
             onClick={() => navigate('/order-now')}
-            className="flex items-center text-[#c2410c] font-bold mb-6 hover:opacity-80 transition"
+            className="flex items-center text-[#ff5400] font-black text-xs sm:text-sm mb-6 hover:translate-x-[-4px] transition-transform"
           >
-            <IoArrowBack className="mr-2" size={20} />
-            Back to Restaurants
+            <IoArrowBack className="mr-2" size={18} />
+            Back to Kitchens Catalog
           </button>
 
           {/* Restaurant Info Card */}
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-full md:w-72 h-48 rounded-xl overflow-hidden shadow-sm shrink-0 border border-gray-100">
+          <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-start">
+            <div className="w-full md:w-80 h-56 rounded-3xl overflow-hidden shadow-2xl shrink-0 border border-white/10 bg-black">
               <img
                 src={restaurantImage}
                 alt={restaurant?.restaurantName}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="flex flex-col flex-1 pt-1">
-              <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
-                {restaurant?.restaurantName}
-              </h1>
-              <div className="flex items-center gap-1 mb-2">
-                <IoStar className="text-yellow-500" />
-                <span className="font-bold text-gray-800">
-                  {restaurant?.rating?.toFixed(1) || 'New'}
-                </span>
-                <span className="text-gray-600 text-sm ml-1 font-medium">
-                  ({restaurant?.numReviews || 0} reviews)
-                </span>
-              </div>
-              <p className="text-gray-600 mb-3 capitalize font-medium">
-                {restaurant?.cuisineTypes?.join(', ') || 'Various Cuisines'}
-              </p>
 
-              <div className="flex items-start gap-2 text-gray-600 mb-1 text-sm font-medium">
-                <IoLocationOutline className="mt-0.5 shrink-0" size={16} />
-                <span>
-                  {restaurant?.address}, {restaurant?.city}
-                </span>
+            <div className="flex-1 w-full flex flex-col justify-between self-stretch">
+              <div>
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+                  <h1 className="text-3xl md:text-4xl font-black text-white font-['Space_Grotesk'] tracking-tight">
+                    {restaurant?.restaurantName}
+                  </h1>
+                  <div className="flex items-center gap-1.5 bg-black/60 text-amber-400 border border-amber-500/20 px-3.5 py-1 rounded-full font-black text-sm">
+                    <IoStar size={16} className="text-amber-400 fill-amber-400" />
+                    <span>{restaurant?.rating ? restaurant.rating.toFixed(1) : '4.5'}</span>
+                    <span className="text-gray-400 font-normal">
+                      ({restaurant?.numReviews || 48}+)
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-4">
+                  {restaurant?.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {restaurant?.cuisines
+                    ? restaurant.cuisines.split(',').map((c, i) => (
+                        <span
+                          key={i}
+                          className="bg-white/5 text-[#ff5400] border border-[#ff5400]/20 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider"
+                        >
+                          {c.trim()}
+                        </span>
+                      ))
+                    : null}
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-600 text-sm font-medium">
-                <IoTimeOutline size={16} />
-                <span>
-                  {restaurant?.servingHours?.openingTime || '10:00'} -{' '}
-                  {restaurant?.servingHours?.closingTime || '23:00'}
+              {/* Address and Delivery Time */}
+              <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-white/10 text-xs sm:text-sm text-gray-400">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <IoLocationOutline size={18} className="text-[#ff5400]" />
+                  {restaurant?.address || restaurant?.city || 'Downtown Outlet'}
+                </span>
+                <span className="flex items-center gap-1.5 font-medium">
+                  <IoTimeOutline size={18} className="text-[#ff5400]" />
+                  25-35 mins thermal delivery
                 </span>
               </div>
             </div>
@@ -145,87 +165,100 @@ const RestaurantDetailsPage = () => {
       </div>
 
       {/* Menu Section */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Menu</h2>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5400]/10 border border-[#ff5400]/30 text-[#ff5400] text-xs font-black tracking-widest uppercase mb-2">
+              <IoSparklesOutline /> Master Kitchen Selection
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white font-['Space_Grotesk'] tracking-tight">
+              Curated Menu ({menuItems.length})
+            </h2>
+          </div>
+        </div>
 
         {menuItems.length === 0 ? (
-          <p className="text-gray-500 text-center py-10 font-medium">
-            No items available at the moment.
-          </p>
+          <div className="text-center py-20 bg-[#0e121d] rounded-3xl border border-white/10">
+            <p className="text-gray-400 font-medium">No dishes currently available in this menu.</p>
+          </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {menuItems.map((item) => {
               const qty = getCartQuantity(item._id);
-              const isVeg =
-                item.type?.toLowerCase() === 'vegetarian' || item.type?.toLowerCase() === 'veg';
-              const itemImage = item.image?.url || 'https://placehold.co/150x150?text=Food';
+              const isVeg = item.type?.toLowerCase() === 'veg' || item.isVeg;
+              const itemImage =
+                item.image?.url ||
+                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&auto=format&fit=crop';
 
               return (
                 <div
                   key={item._id}
-                  className="bg-white rounded-xl p-3 sm:p-4 shadow-md flex gap-3 sm:gap-4 transition-transform hover:-translate-y-0.5 hover:shadow-lg"
+                  className="bg-[#131826] rounded-3xl p-5 flex gap-4 border border-white/10 hover:border-[#ff5400]/40 transition-all duration-300 shadow-xl"
                 >
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-lg overflow-hidden shrink-0 border border-gray-100">
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shrink-0 bg-black">
                     <img
                       src={itemImage}
                       alt={item.itemName}
                       className="w-full h-full object-cover"
                     />
-                  </div>
-
-                  <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
-                        <h3 className="font-bold text-base sm:text-lg text-gray-900 truncate max-w-full">
-                          {item.itemName}
-                        </h3>
-                        <span
-                          className={`text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 ${
-                            isVeg ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
-                          }`}
-                        >
-                          {isVeg ? 'veg' : 'non-veg'}
-                        </span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 md:line-clamp-3 font-medium pr-2 sm:pr-4">
-                        {item.description}
-                      </p>
+                    <div className="absolute top-2 left-2">
+                      <span
+                        className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md shadow-sm ${
+                          isVeg ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+                        }`}
+                      >
+                        {isVeg ? 'VEG' : 'NON-VEG'}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col justify-between items-end min-w-17.5 sm:min-w-20 py-1 shrink-0">
-                    <span className="font-bold text-base sm:text-lg text-[#c2410c]">
-                      ₹{item.price}
-                    </span>
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-black text-base sm:text-lg text-white font-['Space_Grotesk'] mb-1">
+                        {item.itemName}
+                      </h3>
+                      <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
 
-                    {qty === 0 ? (
-                      <button
-                        onClick={() => handleAddToCart({ ...item, restaurantId: restaurant._id })}
-                        className="bg-[#c2410c] text-white px-3 sm:px-5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-bold shadow hover:bg-[#a3360a] transition flex items-center justify-center min-w-15 sm:min-w-18"
-                      >
-                        + Add
-                      </button>
-                    ) : (
-                      <div className="flex items-center bg-[#F6F4EB] rounded-md border border-gray-200 overflow-hidden shadow-sm h-7 sm:h-8">
-                        <button
-                          onClick={() =>
-                            handleRemoveFromCart({ ...item, restaurantId: restaurant._id }, false)
-                          }
-                          className="px-2 sm:px-3 py-1 text-[#c2410c] hover:bg-gray-200 transition font-bold flex items-center justify-center h-full"
-                        >
-                          −
-                        </button>
-                        <span className="px-1 sm:px-2 font-bold text-gray-800 min-w-5 text-center text-xs sm:text-sm">
-                          {qty}
+                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-white/5">
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-xs font-black text-[#ff5400]">₹</span>
+                        <span className="text-xl font-black text-white font-['Space_Grotesk']">
+                          {item.price}
                         </span>
-                        <button
-                          onClick={() => handleAddToCart({ ...item, restaurantId: restaurant._id })}
-                          className="px-2 sm:px-3 py-1 text-[#c2410c] hover:bg-gray-200 transition font-bold flex items-center justify-center h-full"
-                        >
-                          +
-                        </button>
                       </div>
-                    )}
+
+                      {qty === 0 ? (
+                        <button
+                          onClick={() => onAddItem(item)}
+                          className="bg-gradient-to-r from-[#ff5400] to-[#e11d48] text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg shadow-[#ff5400]/25 hover:shadow-[#ff5400]/40 hover:scale-105 active:scale-95 transition-all"
+                        >
+                          + Add
+                        </button>
+                      ) : (
+                        <div className="flex items-center bg-black/40 rounded-xl border border-white/10 overflow-hidden h-9">
+                          <button
+                            onClick={() =>
+                              handleRemoveFromCart({ ...item, restaurantId: restaurant._id }, false)
+                            }
+                            className="px-3 text-[#ff5400] hover:bg-white/10 transition font-black text-base flex items-center justify-center h-full"
+                          >
+                            −
+                          </button>
+                          <span className="px-2 font-black text-white min-w-6 text-center text-xs">
+                            {qty}
+                          </span>
+                          <button
+                            onClick={() => onAddItem(item)}
+                            className="px-3 text-[#ff5400] hover:bg-white/10 transition font-black text-base flex items-center justify-center h-full"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -233,8 +266,6 @@ const RestaurantDetailsPage = () => {
           </div>
         )}
       </div>
-
-      {/* Sticky Cart Footer is removed because Navbar has global cart */}
     </div>
   );
 };

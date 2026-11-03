@@ -62,15 +62,24 @@ const ReceiptModal = ({ isOpen, onClose, data }) => {
 
             for (const prop of colorProps) {
               const val = computed[prop];
-              if (val && (val.includes('oklab') || val.includes('oklch') || val.includes('color('))) {
+              if (
+                val &&
+                (val.includes('oklab') || val.includes('oklch') || val.includes('color('))
+              ) {
                 node.style[prop] = convertColor(val);
               }
             }
 
-            if (computed.boxShadow && (computed.boxShadow.includes('oklab') || computed.boxShadow.includes('oklch'))) {
+            if (
+              computed.boxShadow &&
+              (computed.boxShadow.includes('oklab') || computed.boxShadow.includes('oklch'))
+            ) {
               node.style.boxShadow = 'none';
             }
-            if (computed.textShadow && (computed.textShadow.includes('oklab') || computed.textShadow.includes('oklch'))) {
+            if (
+              computed.textShadow &&
+              (computed.textShadow.includes('oklab') || computed.textShadow.includes('oklch'))
+            ) {
               node.style.textShadow = 'none';
             }
 
@@ -196,10 +205,7 @@ const ReceiptModal = ({ isOpen, onClose, data }) => {
               </div>
             </div>
 
-            <div
-              className="border-t border-dashed pt-4"
-              style={{ borderColor: '#e5e7eb' }}
-            >
+            <div className="border-t border-dashed pt-4" style={{ borderColor: '#e5e7eb' }}>
               <h3 className="font-bold mb-3" style={{ color: '#111827' }}>
                 Order Details
               </h3>

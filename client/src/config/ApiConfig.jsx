@@ -4,9 +4,7 @@ import toast from 'react-hot-toast';
 const rawBaseURL =
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD
-    ? 'https://cravings08.onrender.com'
-    : 'http://localhost:4500');
+  (import.meta.env.PROD ? 'https://cravings08.onrender.com' : 'http://localhost:4500');
 
 const baseURL = (rawBaseURL || '').replace(/\/+$/, '');
 

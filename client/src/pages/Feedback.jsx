@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { FaStar } from 'react-icons/fa';
+import { IoSparklesOutline, IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 import api from '../config/ApiConfig';
 
 const Feedback = () => {
@@ -16,11 +17,11 @@ const Feedback = () => {
   const [loading, setLoading] = useState(false);
 
   const categories = [
-    'Food Quality',
-    'Delivery Experience',
-    'App & Website',
-    'Customer Support',
-    'Pricing & Value',
+    'Food Quality & Presentation',
+    'Delivery Velocity & Packaging',
+    'Platform Experience & UI',
+    'Concierge Support',
+    'Culinary Value & Pricing',
   ];
 
   const handleInputChange = (e) => {
@@ -64,7 +65,7 @@ const Feedback = () => {
         rating: Number(formData.rating),
       });
 
-      toast.success(response.data.message || 'Feedback submitted successfully');
+      toast.success(response.data.message || 'Feedback submitted to Culinary Board!');
       setFormData({
         fullName: '',
         email: '',
@@ -81,118 +82,130 @@ const Feedback = () => {
   };
 
   const inputClass = (field) =>
-    `w-full px-3 py-2 border rounded-md text-sm text-(--color-neutral) bg-white/85 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
-      errors[field] ? 'border-(--color-error) border-2' : 'border-white/50 border'
+    `w-full px-4 py-3 bg-[#080a11]/80 border rounded-2xl text-sm text-white placeholder-gray-500 focus:outline-none transition-all duration-300 ${
+      errors[field]
+        ? 'border-rose-500'
+        : 'border-white/10 focus:border-[#ff5400] focus:ring-1 focus:ring-[#ff5400]/50'
     }`;
 
   return (
-    <div
-      className="min-h-[90vh] flex items-start justify-end bg-cover bg-center px-4 py-10 md:px-10"
-      style={{ backgroundImage: `url(/FeedbackPage.jpeg)` }}
-    >
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl px-6 py-8 max-w-120 w-full border border-white/30">
-        <h1 className="text-3xl font-bold text-(--color-primary) mb-3 text-center">
-          Share Feedback
-        </h1>
-        <p className="text-(--color-secondary) text-center mb-7">
-          Help us improve your Cravings experience.
-        </p>
+    <div className="min-h-screen bg-[#080a11] text-gray-100 flex items-center justify-center py-16 px-4 relative overflow-hidden selection:bg-[#ff5400] selection:text-white">
+      {/* Dynamic ambient blur spots */}
+      <div className="absolute top-1/3 left-1/3 w-[450px] h-[450px] bg-[#ff5400]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/3 right-1/3 w-[450px] h-[450px] bg-[#f59e0b]/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="bg-[#131826]/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 max-w-lg w-full border border-white/10 relative z-10">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5400]/10 border border-[#ff5400]/30 text-[#ff5400] text-xs font-black tracking-widest uppercase mb-3">
+            <IoChatbubbleEllipsesOutline /> Foodie Voice
+          </div>
+          <h1 className="text-3xl font-black text-white font-['Space_Grotesk'] tracking-tight">
+            Share Your Experience
+          </h1>
+          <p className="text-xs text-gray-400 mt-1">
+            Help our master chefs and courier fleet continuously elevate standards.
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-(--color-neutral) mb-2">
-              Full Name
-            </label>
+            <label className="block text-xs font-bold text-gray-300 mb-1.5">Full Name</label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
-              placeholder="Enter your full name"
+              placeholder="e.g. Gordon Ramsay"
               className={inputClass('fullName')}
             />
             {errors.fullName && (
-              <p className="text-(--color-error) text-xs mt-1">{errors.fullName}</p>
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.fullName}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-(--color-neutral) mb-2">Email</label>
+            <label className="block text-xs font-bold text-gray-300 mb-1.5">Email Address</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Enter your email"
+              placeholder="gordon@example.com"
               className={inputClass('email')}
             />
-            {errors.email && <p className="text-(--color-error) text-xs mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.email}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-(--color-neutral) mb-2">
+            <label className="block text-xs font-bold text-gray-300 mb-1.5">
               Feedback Category
             </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              className={inputClass('category')}
+              className={`${inputClass('category')} appearance-none`}
             >
-              <option value="">Select a category</option>
+              <option value="" className="bg-[#0e121d]">
+                Select an experience category
+              </option>
               {categories.map((category) => (
-                <option key={category} value={category}>
+                <option key={category} value={category} className="bg-[#0e121d]">
                   {category}
                 </option>
               ))}
             </select>
             {errors.category && (
-              <p className="text-(--color-error) text-xs mt-1">{errors.category}</p>
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.category}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-(--color-neutral) mb-2">
-              Overall Rating
-            </label>
-            <div className="flex gap-2">
+            <label className="block text-xs font-bold text-gray-300 mb-1.5">Overall Rating</label>
+            <div className="flex gap-3 py-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
                   onClick={() => setFormData((prev) => ({ ...prev, rating: star }))}
-                  className={`text-2xl ${Number(formData.rating) >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                  className={`text-2xl transition-transform hover:scale-125 ${
+                    Number(formData.rating) >= star ? 'text-amber-400' : 'text-gray-600'
+                  }`}
                 >
                   <FaStar />
                 </button>
               ))}
             </div>
-            {errors.rating && <p className="text-(--color-error) text-xs mt-1">{errors.rating}</p>}
+            {errors.rating && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.rating}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-(--color-neutral) mb-2">
-              Your Feedback
+            <label className="block text-xs font-bold text-gray-300 mb-1.5">
+              Your Review & Feedback
             </label>
             <textarea
               name="message"
               value={formData.message}
               onChange={handleInputChange}
-              placeholder="Tell us about your experience..."
-              rows={5}
+              placeholder="Detail your thoughts on taste, heat, speed, or app design..."
+              rows={4}
               className={inputClass('message') + ' resize-none'}
             />
             {errors.message && (
-              <p className="text-(--color-error) text-xs mt-1">{errors.message}</p>
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.message}</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-(--color-primary)/95 text-white font-semibold rounded-2xl hover:bg-(--color-primary) transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-2 py-3.5 bg-gradient-to-r from-[#ff5400] to-[#e11d48] hover:from-[#e04800] hover:to-[#cc163d] text-white font-black text-sm rounded-2xl shadow-lg shadow-[#ff5400]/25 hover:shadow-[#ff5400]/40 transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Submitting...' : 'Submit Feedback'}
+            {loading ? 'Transmitting Feedback...' : 'Submit Feedback'}
           </button>
         </form>
       </div>
