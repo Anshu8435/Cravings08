@@ -10,7 +10,7 @@
     "dev:server": "npm --prefix server run dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build": "npm --prefix client run build"
+    "build": "npm --prefix client install && npm --prefix client run build"
   },
   "devDependencies": {
     "prettier": "^3.9.10"

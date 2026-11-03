@@ -36,23 +36,5 @@ export default defineConfig({
   build: {
     sourcemap: false,
     chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (
-              id.includes('react') ||
-              id.includes('react-dom') ||
-              id.includes('react-router-dom')
-            ) {
-              return 'vendor';
-            }
-            if (id.includes('react-icons') || id.includes('react-hot-toast')) {
-              return 'ui';
-            }
-          }
-        },
-      },
-    },
   },
 });
