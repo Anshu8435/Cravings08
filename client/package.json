@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
-    "postinstall": "node ../scripts/fix-vite.cjs"
+    "postinstall": "node -e \"if (require('fs').existsSync('../scripts/fix-vite.cjs')) { try { require('child_process').execSync('node ../scripts/fix-vite.cjs', {stdio: 'inherit'}); } catch(e){} }\""
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.1",
@@ -23,16 +23,10 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.20.0",
     "@jridgewell/sourcemap-codec": "^1.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^9.20.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.7",
-    "globals": "^17.13.0",
     "vite": "^8.0.12"
   },
   "overrides": {
