@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({
   activeTab,
@@ -12,108 +13,42 @@ const Sidebar = ({
   selectedDropdownValue,
   onDropdownChange,
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  React.useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsCollapsed(true);
-      } else {
-        setIsCollapsed(false);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const renderTab = (tab) => {
-    const isActive = activeTab === tab.value;
-
-    return (
-      <li
-        key={tab.value}
-        className={`group relative cursor-pointer flex items-center transition-all duration-300 ease-out ${
-          isCollapsed ? 'justify-center p-3 w-12 h-12' : 'px-4 py-3 w-full gap-4'
-        } rounded-2xl ${
-          isActive
-            ? 'bg-gradient-to-r from-[#ff5400] to-[#e11d48] text-white shadow-lg shadow-[#ff5400]/25 ring-1 ring-white/20'
-            : 'text-gray-400 hover:text-white hover:bg-white/5'
-        } my-1`}
-        onClick={() => setActiveTab(tab.value)}
-      >
-        {/* Active Indicator Line (Only when expanded for sleekness, or always) */}
-        {isActive && !isCollapsed && (
-          <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white/80 rounded-r-full blur-[1px]"></div>
-        )}
-
-        <div
-          className={`flex items-center justify-center text-2xl shrink-0 transition-transform duration-500 ${
-            isActive
-              ? 'scale-110 drop-shadow-md'
-              : 'group-hover:scale-110 opacity-70 group-hover:opacity-100'
-          }`}
-        >
-          {tab.icon}
-        </div>
-
-        {!isCollapsed && (
-          <span className="font-semibold tracking-wide whitespace-nowrap overflow-hidden transition-all duration-300">
-            {tab.name}
-          </span>
-        )}
-
-        {/* Glassmorphic Tooltip */}
-        {isCollapsed && (
-          <div className="absolute left-full ml-6 px-4 py-2 bg-gray-900/90 backdrop-blur-md text-white text-sm font-medium tracking-wide rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none z-50 whitespace-nowrap transition-all duration-300 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/10 scale-95 group-hover:scale-100 origin-left">
-            {tab.name}
-          </div>
-        )}
-      </li>
-    );
-  };
+  const { user, role } = useAuth();
+  const initial = user?.fullName
+    ? user.fullName.charAt(0).toUpperCase()
+    : subtitle
+      ? subtitle.charAt(0).toUpperCase()
+      : 'C';
 
   return (
-    <div
-      onMouseEnter={() => setIsCollapsed(false)}
-      onMouseLeave={() => setIsCollapsed(true)}
-      className={`relative h-full flex-col bg-[#0e121d]/95 backdrop-blur-2xl shadow-2xl border-r border-white/10 transition-all duration-300 flex ${
-        isCollapsed ? 'w-24 items-center py-8' : 'w-72 p-6 z-50 absolute md:relative md:z-auto'
-      }`}
-    >
-      {/* Decorative Top Accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-[#ff5400] to-[#e11d48] rounded-b-full"></div>
-
-      {/* Sidebar Header / Logo Area */}
-      <div className={`w-full flex items-center mb-8 ${isCollapsed ? 'justify-center' : 'px-2'}`}>
-        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ff5400] to-[#e11d48] flex items-center justify-center shadow-lg shadow-[#ff5400]/25 text-white font-black text-xl shrink-0 font-['Space_Grotesk']">
-          {title.charAt(0)}
+    <aside className="dashboard-sidebar">
+      {/* Profile Header */}
+      <div className="dashboard-profile">
+        <span className="avatar">{initial}</span>
+        <div>
+          <strong>{user?.fullName?.split(' ')[0] || title}</strong>
+          <small>{subtitle || role || 'Active workspace'}</small>
         </div>
-        {!isCollapsed && (
-          <div className="ml-4 flex flex-col">
-            <span className="font-black text-lg tracking-tight text-white font-['Space_Grotesk']">
-              {title}
-            </span>
-            <span className="text-[10px] font-black text-[#ff5400] uppercase tracking-widest">
-              {subtitle}
-            </span>
-          </div>
-        )}
       </div>
 
       {dropdownOptions && dropdownOptions.length > 0 && (
-        <div className={`mb-6 px-4 ${isCollapsed ? 'hidden' : 'block'}`}>
+        <div style={{ marginBottom: '12px' }}>
           <select
             value={selectedDropdownValue}
             onChange={(e) => onDropdownChange(e.target.value)}
-            className="w-full bg-white/60 dark:bg-black/60 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-lg px-3 py-2 shadow-sm focus:ring-2 focus:ring-(--color-primary) outline-none transition-all"
+            style={{
+              width: '100%',
+              padding: '6px 8px',
+              borderRadius: '6px',
+              border: '1px solid var(--line)',
+              background: 'var(--paper)',
+              fontSize: '0.8rem',
+              color: 'var(--ink)',
+              fontFamily: 'inherit',
+            }}
           >
             {dropdownOptions.map((opt) => (
-              <option
-                key={opt.value}
-                value={opt.value}
-                className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
-              >
+              <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             ))}
@@ -121,24 +56,45 @@ const Sidebar = ({
         </div>
       )}
 
-      {/* Tabs Container */}
-      <div className="flex-1 w-full mt-4 overflow-y-auto overflow-x-hidden scrollbar-hide">
-        <ul className={`flex flex-col gap-3 ${isCollapsed ? 'items-center' : ''}`}>
-          {mainTabs.map(renderTab)}
-        </ul>
-      </div>
+      {/* Nav Tabs */}
+      <nav
+        aria-label={`${subtitle} navigation`}
+        style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}
+      >
+        {mainTabs.map((tab) => {
+          const isActive = activeTab === tab.value;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              className={isActive ? 'is-active' : ''}
+              onClick={() => setActiveTab(tab.value)}
+            >
+              <span className="side-mark">
+                {tab.value === 'overview' ? '⌂' : tab.value.slice(0, 1).toUpperCase()}
+              </span>
+              {tab.name}
+            </button>
+          );
+        })}
 
-      {/* Settings Tab */}
-      {settingsTab && (
-        <div
-          className={`w-full relative mt-6 pt-6 ${isCollapsed ? 'flex flex-col items-center' : ''}`}
-        >
-          {/* Subtle separator */}
-          <div className="absolute top-0 left-4 right-4 h-px bg-linear-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent opacity-50"></div>
-          <ul className="flex flex-col gap-3">{renderTab(settingsTab)}</ul>
-        </div>
-      )}
-    </div>
+        {settingsTab && (
+          <button
+            type="button"
+            className={activeTab === settingsTab.value ? 'is-active' : ''}
+            onClick={() => setActiveTab(settingsTab.value)}
+          >
+            <span className="side-mark">⚙</span>
+            {settingsTab.name}
+          </button>
+        )}
+
+        <Link to="/" className="dashboard-exit" style={{ marginTop: '12px' }}>
+          <span className="side-mark">↩</span>
+          Back to Cravings
+        </Link>
+      </nav>
+    </aside>
   );
 };
 
