@@ -13,10 +13,15 @@ export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
       /\s+/g,
       '',
     );
+    const isProduction = process.env.NODE_ENV === 'production';
 
     if (!gmailUser || !gmailPass) {
-      console.warn(`[OTP] Gmail credentials not set in env for ${email}. Generated OTP: ${newOTP}`);
-      return { success: false, reason: 'missing_credentials' };
+      if (!isProduction) {
+        console.log(`DEV OTP fallback for ${email}: ${newOTP}`);
+        return;
+      }
+
+      throw new Error('Gmail credentials not found in env, skipping actual email send.');
     }
 
     const transporter = nodemailer.createTransport({
@@ -25,9 +30,6 @@ export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
         user: gmailUser,
         pass: gmailPass,
       },
-      connectionTimeout: 7000,
-      greetingTimeout: 7000,
-      socketTimeout: 7000,
     });
 
     const logoPath = path.join(__dirname, '../../../client/src/assets/circleLogo.png');
@@ -42,7 +44,9 @@ export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
     }
 
     const mailOptions = {
-      from: `"Cravings Food Delivery" <${gmailUser}>`,
+      from: gmailUser
+        ? `"Cravings Food Delivery" <${gmailUser}>`
+        : '"Cravings Food Delivery" <noreply@cravings.com>',
       to: email,
       subject: 'Cravings - Secure OTP Verification',
       text: `Hello ${fullName},
@@ -80,13 +84,18 @@ Stay hungry, stay happy!
       attachments,
     };
 
-    await transporter.sendMail(mailOptions);
-    console.log(`[OTP] Email sent successfully to ${email}`);
-    return { success: true };
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('OTP email sent successfully!');
+    } catch (smtpError) {
+      if (!isProduction) {
+        console.warn(`DEV SMTP fallback: Gmail rejected credentials for ${email}. OTP: ${newOTP}`);
+        return;
+      }
+      throw smtpError;
+    }
   } catch (error) {
-    console.warn(
-      `[OTP] Failed to deliver OTP email to ${email}: ${error.message}. Generated OTP: ${newOTP}`,
-    );
-    return { success: false, reason: error.message };
+    console.error('Error sending OTP email:', error);
+    throw error;
   }
 };
