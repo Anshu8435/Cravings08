@@ -11,6 +11,7 @@ const baseURL = (rawBaseURL || '').replace(/\/+$/, '');
 const api = axios.create({
   baseURL: baseURL || 'http://localhost:4500',
   withCredentials: true,
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
@@ -23,7 +24,18 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config;
+    const status = error.response?.status;
+    const isTransientError = !status || status === 502 || status === 503 || status === 504;
+
+    if (config && isTransientError && (!config.__retryCount || config.__retryCount < 3)) {
+      config.__retryCount = (config.__retryCount || 0) + 1;
+      const delay = Math.pow(2, config.__retryCount - 1) * 1000;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return api(config);
+    }
+
     if (error.response?.data) {
       if (!error.response.data.message && error.response.data.error?.message) {
         error.response.data.message = error.response.data.error.message;
