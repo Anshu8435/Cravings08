@@ -43,6 +43,8 @@ import OrderRouter from './src/router/order.route.js';
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Security Headers
 app.use(securityHeaders);
 

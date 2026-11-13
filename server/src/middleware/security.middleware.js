@@ -26,7 +26,7 @@ export const securityHeaders = helmet({
 
 export const apiRateLimiter = rateLimit({
   windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 60 * 1000,
-  max: Number(process.env.RATE_LIMIT_MAX) || 100,
+  max: Number(process.env.RATE_LIMIT_MAX) || 300,
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) =>
@@ -34,6 +34,7 @@ export const apiRateLimiter = rateLimit({
     (req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1'),
   message: {
     success: false,
+    message: 'Too many requests. Please try again later.',
     error: {
       code: 'RATE_LIMIT_EXCEEDED',
       message: 'Too many requests. Please try again later.',
@@ -43,7 +44,8 @@ export const apiRateLimiter = rateLimit({
 
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 15 : 1000,
+  max:
+    Number(process.env.AUTH_RATE_LIMIT_MAX) || (process.env.NODE_ENV === 'production' ? 100 : 1000),
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) =>
@@ -51,9 +53,10 @@ export const authRateLimiter = rateLimit({
     (req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1'),
   message: {
     success: false,
+    message: 'Too many authentication attempts. Please try again after a few minutes.',
     error: {
       code: 'AUTH_RATE_LIMIT_EXCEEDED',
-      message: 'Too many authentication attempts. Please try again after 15 minutes.',
+      message: 'Too many authentication attempts. Please try again after a few minutes.',
     },
   },
 });
