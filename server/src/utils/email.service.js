@@ -41,7 +41,35 @@ Stay hungry, stay happy!
       </div>
     `;
 
-    // 1. If RESEND_API_KEY is configured, send via HTTPS REST API (bypasses cloud SMTP port blocks)
+    // 1. If BREVO_API_KEY is configured, send via Brevo HTTPS REST API (Port 443, sends to ANY recipient without domain verification)
+    const brevoApiKey = process.env.BREVO_API_KEY;
+    if (brevoApiKey) {
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': brevoApiKey.trim(),
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          sender: { name: 'Cravings Food Delivery', email: 'anshugupta15029@gmail.com' },
+          to: [{ email, name: fullName }],
+          subject: 'Cravings - Secure OTP Verification',
+          htmlContent,
+          textContent,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Brevo API failed to send email');
+      }
+
+      console.log(`[OTP] Real email sent via Brevo API to ${email}: ${data.messageId}`);
+      return { messageId: data.messageId };
+    }
+
+    // 2. If RESEND_API_KEY is configured, send via Resend HTTPS REST API
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       const res = await fetch('https://api.resend.com/emails', {
