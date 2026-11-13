@@ -3,6 +3,13 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 
+router.get(['/ping', '/api/health'], (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 router.get('/health', (req, res) => {
   res.status(200).json({
     status: 'UP',

@@ -1,24 +1,58 @@
 import mongoose from 'mongoose';
 
+let isConnecting = false;
+
+const setupConnectionListeners = () => {
+  if (mongoose.connection._hasSetupListeners) return;
+  mongoose.connection._hasSetupListeners = true;
+
+  mongoose.connection.on('connected', () => {
+    console.log('MongoDB connected successfully');
+  });
+
+  mongoose.connection.on('error', (err) => {
+    console.error('MongoDB connection error:', err.message);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.warn('MongoDB disconnected. Attempting reconnection...');
+    setTimeout(connectDB, 5000);
+  });
+
+  mongoose.connection.on('reconnected', () => {
+    console.log('MongoDB reconnected successfully');
+  });
+};
+
 const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (isConnecting) return;
+
   const dbUri = process.env.MONGO_DB_URI || process.env.MONGO_URI || process.env.MONGODB_URI;
   if (!dbUri) {
-    console.error(
-      'Fatal: MongoDB connection URI is missing! Set MONGO_DB_URI or MONGO_URI in environment.',
-    );
-    process.exit(1);
+    console.error('MongoDB URI missing in environment variables');
+    return;
   }
+
+  setupConnectionListeners();
+  isConnecting = true;
 
   try {
     const conn = await mongoose.connect(dbUri, {
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
     });
-    console.log('Mongo DB connected Successfully');
-    console.log('DB Host :', conn.connection.host);
-    console.log('DB Name :', conn.connection.name);
+    isConnecting = false;
+    return conn;
   } catch (error) {
-    console.error('Database connection error:', error.message);
-    process.exit(1);
+    isConnecting = false;
+    console.error('Database connection attempt failed:', error.message);
+    console.log('Retrying connection in 5 seconds...');
+    setTimeout(connectDB, 5000);
   }
 };
 

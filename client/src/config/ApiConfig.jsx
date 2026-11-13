@@ -11,7 +11,7 @@ const baseURL = (rawBaseURL || '').replace(/\/+$/, '');
 const api = axios.create({
   baseURL: baseURL || 'http://localhost:4500',
   withCredentials: true,
-  timeout: 15000,
+  timeout: 60000,
 });
 
 api.interceptors.request.use((config) => {
@@ -23,23 +23,39 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    toast.dismiss('server-wakeup');
+    return response;
+  },
   async (error) => {
     const config = error.config;
     const status = error.response?.status;
+    const isTimeout = error.code === 'ECONNABORTED';
     const isNetworkError = !error.response;
-    const isGatewayError = status === 502 || status === 504;
-    const isTransientError =
-      isNetworkError ||
-      isGatewayError ||
-      (status === 503 && config?.method?.toLowerCase() === 'get');
+    const isGatewayError = status === 502 || status === 503 || status === 504;
+    const isTransientError = isTimeout || isNetworkError || isGatewayError;
 
-    if (config && isTransientError && (!config.__retryCount || config.__retryCount < 2)) {
+    if (config && isTransientError && (!config.__retryCount || config.__retryCount < 3)) {
       config.__retryCount = (config.__retryCount || 0) + 1;
-      const delay = Math.pow(2, config.__retryCount - 1) * 1000;
+
+      toast.loading('Waking up server, please wait a moment...', { id: 'server-wakeup' });
+
+      const delay = Math.pow(2, config.__retryCount - 1) * 2000;
       await new Promise((resolve) => setTimeout(resolve, delay));
-      return api(config);
+
+      try {
+        const retryResponse = await api(config);
+        toast.dismiss('server-wakeup');
+        return retryResponse;
+      } catch (retryError) {
+        if (!config.__retryCount || config.__retryCount >= 3) {
+          toast.dismiss('server-wakeup');
+        }
+        return Promise.reject(retryError);
+      }
     }
+
+    toast.dismiss('server-wakeup');
 
     if (error.response?.data) {
       if (!error.response.data.message && error.response.data.error?.message) {
