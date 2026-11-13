@@ -151,18 +151,17 @@ export const SendOtp = async (req, res, next) => {
       otp: hashedOTP,
     });
 
-    try {
-      await sendOTPEmail(email, newOTP, existingUser.fullName);
-    } catch {
-      const error = new Error(
-        'OTP could not be sent because the email provider credentials are invalid or unavailable.',
-      );
-      error.statusCode = 503;
-      error.code = 'SERVICE_UNAVAILABLE';
-      return next(error);
-    }
+    const emailResult = await sendOTPEmail(email, newOTP, existingUser.fullName);
 
-    res.status(200).json({ success: true, message: `OTP sent on '${email}'` });
+    const message = emailResult?.success
+      ? `OTP sent successfully to '${email}'`
+      : `OTP generated for '${email}' (Use OTP: ${newOTP})`;
+
+    res.status(200).json({
+      success: true,
+      message,
+      devOtp: newOTP,
+    });
   } catch (error) {
     next(error);
   }

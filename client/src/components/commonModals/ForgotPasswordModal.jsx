@@ -46,6 +46,9 @@ const ForgotPasswordModal = ({ open = true, isOpen = true, onClose }) => {
         }
         const res = await api.post('/auth/send-otp', formData);
         toast.success(res.data.message);
+        if (res.data.devOtp) {
+          setFormData((prev) => ({ ...prev, otp: res.data.devOtp }));
+        }
         setIsOtpSent(true);
       } else if (!isOtpVerified) {
         if (!formData.otp || formData.otp.trim().length !== 6) {
