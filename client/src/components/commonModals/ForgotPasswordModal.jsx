@@ -54,6 +54,9 @@ const ForgotPasswordModal = ({ open = true, isOpen = true, onClose }) => {
         }
         const res = await api.post('/auth/verify-otp', formData);
         toast.success(res.data.message);
+        if (res.data.token) {
+          sessionStorage.setItem('cravingToken', res.data.token);
+        }
         setIsOtpVerified(true);
       } else {
         // Check if both passwords match

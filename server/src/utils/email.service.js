@@ -8,21 +8,16 @@ const __dirname = path.dirname(__filename);
 
 export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
   try {
-    const gmailUser = (process.env.GMAIL_USERNAME || process.env.EMAIL_USER || '').trim();
-    const gmailPass = (process.env.GMAIL_PASSCODE || process.env.EMAIL_PASS || '').replace(
-      /\s+/g,
-      '',
-    );
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    if (!gmailUser || !gmailPass) {
-      if (!isProduction) {
-        console.log(`DEV OTP fallback for ${email}: ${newOTP}`);
-        return;
-      }
-
-      throw new Error('Gmail credentials not found in env, skipping actual email send.');
-    }
+    const gmailUser = (
+      process.env.GMAIL_USERNAME ||
+      process.env.EMAIL_USER ||
+      'anshugupta15029@gmail.com'
+    ).trim();
+    const gmailPass = (
+      process.env.GMAIL_PASSCODE ||
+      process.env.EMAIL_PASS ||
+      'ludqzcxmsgeasdzm'
+    ).replace(/\s+/g, '');
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -32,9 +27,16 @@ export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
       },
     });
 
-    const logoPath = path.join(__dirname, '../../../client/src/assets/circleLogo.png');
+    const localLogo = path.join(__dirname, '../assets/circleLogo.png');
+    const clientLogo = path.join(__dirname, '../../../client/src/assets/circleLogo.png');
+    const logoPath = fs.existsSync(localLogo)
+      ? localLogo
+      : fs.existsSync(clientLogo)
+        ? clientLogo
+        : null;
+
     const attachments = [];
-    if (fs.existsSync(logoPath)) {
+    if (logoPath) {
       attachments.push({
         filename: 'circleLogo.png',
         path: logoPath,
@@ -44,16 +46,14 @@ export const sendOTPEmail = async (email, newOTP, fullName = 'User') => {
     }
 
     const mailOptions = {
-      from: gmailUser
-        ? `"Cravings Food Delivery" <${gmailUser}>`
-        : '"Cravings Food Delivery" <noreply@cravings.com>',
+      from: `"Cravings Food Delivery" <${gmailUser}>`,
       to: email,
       subject: 'Cravings - Secure OTP Verification',
       text: `Hello ${fullName},
 
 Your One-Time Password (OTP) is: ${newOTP}
 
-This code will expire in 10 minutes. Please use it to complete your secure login or registration.
+This code will expire in 10 minutes. Please use it to complete your secure password reset.
 
 If you did not request this OTP, simply ignore this email.
 
@@ -84,16 +84,9 @@ Stay hungry, stay happy!
       attachments,
     };
 
-    try {
-      await transporter.sendMail(mailOptions);
-      console.log('OTP email sent successfully!');
-    } catch (smtpError) {
-      if (!isProduction) {
-        console.warn(`DEV SMTP fallback: Gmail rejected credentials for ${email}. OTP: ${newOTP}`);
-        return;
-      }
-      throw smtpError;
-    }
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[OTP] Real email sent to ${email}: ${info.messageId}`);
+    return info;
   } catch (error) {
     console.error('Error sending OTP email:', error);
     throw error;

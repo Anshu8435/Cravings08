@@ -27,9 +27,14 @@ api.interceptors.response.use(
   async (error) => {
     const config = error.config;
     const status = error.response?.status;
-    const isTransientError = !status || status === 502 || status === 503 || status === 504;
+    const isNetworkError = !error.response;
+    const isGatewayError = status === 502 || status === 504;
+    const isTransientError =
+      isNetworkError ||
+      isGatewayError ||
+      (status === 503 && config?.method?.toLowerCase() === 'get');
 
-    if (config && isTransientError && (!config.__retryCount || config.__retryCount < 3)) {
+    if (config && isTransientError && (!config.__retryCount || config.__retryCount < 2)) {
       config.__retryCount = (config.__retryCount || 0) + 1;
       const delay = Math.pow(2, config.__retryCount - 1) * 1000;
       await new Promise((resolve) => setTimeout(resolve, delay));

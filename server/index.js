@@ -1,8 +1,16 @@
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import morgan from 'morgan';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config();
 
 import cloudinary from './src/config/cloudinary.config.js';
 import connectDB from './src/config/dbConnection.config.js';
@@ -32,8 +40,6 @@ import adminRouter from './src/router/admin.route.js';
 import PoolRouter from './src/router/pool.route.js';
 import PaymentRouter from './src/router/payment.route.js';
 import OrderRouter from './src/router/order.route.js';
-
-dotenv.config();
 
 const app = express();
 
