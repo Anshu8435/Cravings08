@@ -31,7 +31,11 @@ const connectDB = async () => {
 
   if (isConnecting) return;
 
-  const dbUri = process.env.MONGO_DB_URI || process.env.MONGO_URI || process.env.MONGODB_URI;
+  const dbUri =
+    process.env.MONGO_DB_URI ||
+    process.env.MONGO_URI ||
+    process.env.MONGODB_URI ||
+    'mongodb+srv://Anshugupta:Anshugupta15029@mydatabase.eis38hf.mongodb.net/Cravings_DB?retryWrites=true&w=majority';
   if (!dbUri) {
     console.error('MongoDB URI missing in environment variables');
     return;
@@ -51,8 +55,10 @@ const connectDB = async () => {
   } catch (error) {
     isConnecting = false;
     console.error('Database connection attempt failed:', error.message);
-    console.log('Retrying connection in 5 seconds...');
-    setTimeout(connectDB, 5000);
+    if (!process.env.VERCEL) {
+      console.log('Retrying connection in 5 seconds...');
+      setTimeout(connectDB, 5000);
+    }
   }
 };
 

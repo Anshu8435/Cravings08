@@ -152,20 +152,19 @@ export const SendOtp = async (req, res, next) => {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     });
 
-    let emailDelivered = false;
     try {
       await sendOTPEmail(email, newOTP, existingUser.fullName);
-      emailDelivered = true;
     } catch (err) {
-      console.warn(`[OTP] Email delivery failed or SMTP blocked: ${err.message}. OTP: ${newOTP}`);
+      console.error(`[OTP] Email delivery failed: ${err.message}`);
+      const error = new Error('Failed to send OTP to your email. Please try again.');
+      error.statusCode = 500;
+      error.code = 'EMAIL_SEND_FAILED';
+      return next(error);
     }
 
     res.status(200).json({
       success: true,
-      message: emailDelivered
-        ? `OTP sent to '${email}'`
-        : `OTP generated for '${email}' (Verification Code: ${newOTP})`,
-      devOtp: newOTP,
+      message: `OTP sent to '${email}'`,
     });
   } catch (error) {
     next(error);

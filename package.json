@@ -12,6 +12,22 @@
     "format:check": "prettier --check .",
     "build": "npm --prefix client install && npm --prefix client run build"
   },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.3",
+    "morgan": "^1.11.0",
+    "multer": "^2.2.0",
+    "nodemailer": "^10.3.1",
+    "razorpay": "^2.9.8"
+  },
   "devDependencies": {
     "prettier": "^3.9.10"
   }

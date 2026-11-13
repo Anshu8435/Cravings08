@@ -2,14 +2,18 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const rawBaseURL =
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD ? 'https://cravings08.onrender.com' : 'http://localhost:4500');
+  import.meta.env.VITE_API_BASE_URL !== undefined
+    ? import.meta.env.VITE_API_BASE_URL
+    : import.meta.env.VITE_API_URL !== undefined
+      ? import.meta.env.VITE_API_URL
+      : import.meta.env.PROD
+        ? ''
+        : 'http://localhost:4500';
 
-const baseURL = (rawBaseURL || '').replace(/\/+$/, '');
+const baseURL = typeof rawBaseURL === 'string' ? rawBaseURL.replace(/\/+$/, '') : '';
 
 const api = axios.create({
-  baseURL: baseURL || 'http://localhost:4500',
+  baseURL,
   withCredentials: true,
   timeout: 60000,
 });

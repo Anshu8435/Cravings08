@@ -114,25 +114,48 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Database Connection Middleware for serverless & long-lived requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (error) {
+    console.error('Database connection error in request middleware:', error.message);
+  }
+  next();
+});
+
 // Health & Metrics (Excluded from rate limiters)
 app.use('/', HealthRouter);
+app.use('/api', HealthRouter);
 
 // Rate Limiting
 app.use(apiRateLimiter);
 app.use('/auth', authRateLimiter);
+app.use('/api/auth', authRateLimiter);
 
 // API Endpoints
 app.use('/auth', AuthRouter);
+app.use('/api/auth', AuthRouter);
 app.use('/public', PublicRouter);
+app.use('/api/public', PublicRouter);
 app.use('/common', CommonRouter);
+app.use('/api/common', CommonRouter);
 app.use('/menu', MenuRouter);
+app.use('/api/menu', MenuRouter);
 app.use('/restaurant', restaurantRouter);
+app.use('/api/restaurant', restaurantRouter);
 app.use('/admin', adminRouter);
+app.use('/api/admin', adminRouter);
 app.use('/customer', customerRouter);
+app.use('/api/customer', customerRouter);
 app.use('/rider', riderRouter);
+app.use('/api/rider', riderRouter);
 app.use('/pools', PoolRouter);
+app.use('/api/pools', PoolRouter);
 app.use('/payment', PaymentRouter);
+app.use('/api/payment', PaymentRouter);
 app.use('/order', OrderRouter);
+app.use('/api/order', OrderRouter);
 
 // Default API Welcome
 app.get('/', (req, res) => {
@@ -148,7 +171,7 @@ app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   app.listen(port, '0.0.0.0', async () => {
     console.log(`Server Started on port: ${port}`);
     connectDB();

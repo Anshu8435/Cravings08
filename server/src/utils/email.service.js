@@ -96,7 +96,7 @@ Stay hungry, stay happy!
       return { messageId: data.id };
     }
 
-    // 2. Default SMTP delivery (works in local dev environments)
+    // 3. Gmail SMTP delivery (Port 465 SSL primary, Port 587 fallback)
     const gmailUser = (
       process.env.GMAIL_USERNAME ||
       process.env.EMAIL_USER ||
@@ -108,45 +108,48 @@ Stay hungry, stay happy!
       'ludqzcxmsgeasdzm'
     ).replace(/\s+/g, '');
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: gmailUser,
-        pass: gmailPass,
-      },
-      connectionTimeout: 4000,
-      greetingTimeout: 4000,
-      socketTimeout: 4000,
-    });
-
-    const localLogo = path.join(__dirname, '../assets/circleLogo.png');
-    const clientLogo = path.join(__dirname, '../../../client/src/assets/circleLogo.png');
-    const logoPath = fs.existsSync(localLogo)
-      ? localLogo
-      : fs.existsSync(clientLogo)
-        ? clientLogo
-        : null;
-
-    const attachments = [];
-    if (logoPath) {
-      attachments.push({
-        filename: 'circleLogo.png',
-        path: logoPath,
-        cid: 'logoImage@cravings',
-        contentDisposition: 'inline',
-      });
-    }
-
     const mailOptions = {
       from: `"Cravings Food Delivery" <${gmailUser}>`,
       to: email,
       subject: 'Cravings - Secure OTP Verification',
       text: textContent,
       html: htmlContent,
-      attachments,
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    let info;
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
+      });
+
+      info = await transporter.sendMail(mailOptions);
+    } catch (primaryErr) {
+      console.warn('Port 465 attempt failed, trying port 587...', primaryErr.message);
+      const fallbackTransporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
+      });
+
+      info = await fallbackTransporter.sendMail(mailOptions);
+    }
+
     console.log(`[OTP] Real email sent to ${email}: ${info.messageId}`);
     return info;
   } catch (error) {
