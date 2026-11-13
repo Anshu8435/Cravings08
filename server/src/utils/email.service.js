@@ -86,6 +86,9 @@ Stay hungry, stay happy!
         user: gmailUser,
         pass: gmailPass,
       },
+      connectionTimeout: 4000,
+      greetingTimeout: 4000,
+      socketTimeout: 4000,
     });
 
     const localLogo = path.join(__dirname, '../assets/circleLogo.png');
