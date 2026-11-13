@@ -10,32 +10,6 @@ router.get(['/ping', '/api/health'], (req, res) => {
   });
 });
 
-router.get('/debug-email', async (req, res) => {
-  try {
-    const net = await import('net');
-
-    const testPort = (port) =>
-      new Promise((resolve) => {
-        const socket = new net.Socket();
-        socket.setTimeout(4000);
-        socket.connect(port, 'smtp.gmail.com', () => {
-          socket.destroy();
-          resolve({ port, connected: true });
-        });
-        socket.on('error', (err) => resolve({ port, connected: false, error: err.message }));
-        socket.on('timeout', () => {
-          socket.destroy();
-          resolve({ port, connected: false, error: 'Connection timed out' });
-        });
-      });
-
-    const [port465, port587] = await Promise.all([testPort(465), testPort(587)]);
-    res.json({ port465, port587 });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 router.get('/health', (req, res) => {
   res.status(200).json({
     status: 'UP',
