@@ -6,6 +6,8 @@ const otpSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      trim: true,
+      lowercase: true,
     },
     otp: {
       type: String,
@@ -14,7 +16,7 @@ const otpSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      default: () => Date.now() + 5 * 60 * 1000, // OTP expires in 5 minutes
+      default: () => Date.now() + 10 * 60 * 1000,
     },
   },
   { timestamps: true },

@@ -46,7 +46,12 @@ api.interceptors.response.use(
         error.response.data.message = error.response.data.error.message;
       }
     }
-    if (error.response && error.response.status === 401) {
+    const isAuthRoute =
+      config?.url?.includes('/auth/login') ||
+      config?.url?.includes('/auth/verify-otp') ||
+      config?.url?.includes('/auth/register');
+
+    if (error.response && error.response.status === 401 && !isAuthRoute) {
       sessionStorage.removeItem('cravingUser');
       sessionStorage.removeItem('cravingToken');
       localStorage.removeItem('cravingToken');

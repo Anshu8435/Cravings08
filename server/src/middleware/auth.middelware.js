@@ -8,6 +8,9 @@ const extractToken = (req, cookieName = 'Oreo') => {
   if (req.cookies && req.cookies[cookieName]) {
     return req.cookies[cookieName];
   }
+  if (req.body && req.body.token) {
+    return req.body.token;
+  }
   return null;
 };
 

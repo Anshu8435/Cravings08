@@ -111,7 +111,7 @@ export const LogoutUser = async (req, res, next) => {
 
 export const SendOtp = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const email = (req.body.email || '').trim().toLowerCase();
     if (!email) {
       const error = new Error('Email is required');
       error.statusCode = 400;
@@ -149,6 +149,7 @@ export const SendOtp = async (req, res, next) => {
     await OTP.create({
       email,
       otp: hashedOTP,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     });
 
     try {
@@ -170,7 +171,8 @@ export const SendOtp = async (req, res, next) => {
 
 export const VerifyOtp = async (req, res, next) => {
   try {
-    const { email, otp } = req.body;
+    const email = (req.body.email || '').trim().toLowerCase();
+    const otp = String(req.body.otp || '').trim();
 
     if (!email || !otp) {
       const error = new Error('Email and OTP are required');
@@ -181,16 +183,26 @@ export const VerifyOtp = async (req, res, next) => {
 
     const existingOTP = await OTP.findOne({ email });
     if (!existingOTP) {
-      const error = new Error('OTP Expired');
-      error.statusCode = 401;
+      const error = new Error('OTP expired or not found. Please request a new OTP.');
+      error.statusCode = 400;
+      error.code = 'OTP_EXPIRED';
+      return next(error);
+    }
+
+    if (existingOTP.expiresAt && new Date() > new Date(existingOTP.expiresAt)) {
+      await existingOTP.deleteOne();
+      const error = new Error('OTP has expired. Please request a new OTP.');
+      error.statusCode = 400;
       error.code = 'OTP_EXPIRED';
       return next(error);
     }
 
     const isVerified = await bcrypt.compare(otp, existingOTP.otp);
     if (!isVerified) {
-      const error = new Error('Incorrect or Expired OTP');
-      error.statusCode = 401;
+      const error = new Error(
+        'Incorrect OTP. Please enter the valid 6-digit code sent to your email.',
+      );
+      error.statusCode = 400;
       error.code = 'INVALID_OTP';
       return next(error);
     }
@@ -233,6 +245,10 @@ export const ResetPassword = async (req, res, next) => {
     currentUser.lastPasswordChange = new Date();
 
     await currentUser.save();
+
+    if (res && typeof res.clearCookie === 'function') {
+      res.clearCookie('kitkat');
+    }
 
     res.status(200).json({ success: true, message: 'Password Changed' });
   } catch (error) {

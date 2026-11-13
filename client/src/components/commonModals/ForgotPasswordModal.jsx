@@ -40,19 +40,25 @@ const ForgotPasswordModal = ({ open = true, isOpen = true, onClose }) => {
     try {
       setIsLoading(true);
       if (!isOtpSent) {
-        if (!formData.email || !formData.email.trim()) {
+        const cleanEmail = (formData.email || '').trim().toLowerCase();
+        if (!cleanEmail) {
           toast.error('Please enter your email address');
           return;
         }
-        const res = await api.post('/auth/send-otp', formData);
+        const res = await api.post('/auth/send-otp', { email: cleanEmail });
         toast.success(res.data.message);
         setIsOtpSent(true);
       } else if (!isOtpVerified) {
-        if (!formData.otp || formData.otp.trim().length !== 6) {
+        const cleanEmail = (formData.email || '').trim().toLowerCase();
+        const cleanOtp = (formData.otp || '').trim();
+        if (!cleanOtp || cleanOtp.length !== 6) {
           toast.error('Please enter a valid 6-digit OTP');
           return;
         }
-        const res = await api.post('/auth/verify-otp', formData);
+        const res = await api.post('/auth/verify-otp', {
+          email: cleanEmail,
+          otp: cleanOtp,
+        });
         toast.success(res.data.message);
         if (res.data.token) {
           sessionStorage.setItem('cravingToken', res.data.token);
@@ -69,10 +75,20 @@ const ForgotPasswordModal = ({ open = true, isOpen = true, onClose }) => {
           return;
         }
 
-        const res = await api.post('/auth/reset-password', formData);
+        const token = sessionStorage.getItem('cravingToken');
+        const res = await api.post(
+          '/auth/reset-password',
+          {
+            newPassword: formData.newPassword,
+            token,
+          },
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        );
 
         toast.success(res.data.message);
-
+        sessionStorage.removeItem('cravingToken');
         handleCloseModal();
       }
     } catch (error) {
